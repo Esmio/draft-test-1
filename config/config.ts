@@ -125,30 +125,9 @@ export default {
               authority: ['01'],
               routes: [
                 {
-                  name: 'panoramic',
-                  path: 'panoramic',
-                  authority: ['01'],
-                  component: './truck/panoramic',
-                },
-                {
                   name: 'detection',
                   path: 'detection',
                   component: './truck/detection',
-                },
-                {
-                  name: 'statistic',
-                  path: 'statistic',
-                  component: './truck/statistic',
-                },
-                {
-                  name: 'failure',
-                  path: 'failure',
-                  component: './truck/failure',
-                },
-                {
-                  name: 'warning',
-                  path: 'warning',
-                  component: './truck/warning',
                 },
               ]
             },
