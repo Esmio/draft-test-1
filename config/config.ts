@@ -122,110 +122,34 @@ export default {
             {
               path: '/truck',
               name: 'truck',
-              icon: 'car',
               authority: ['01'],
               routes: [
                 {
                   name: 'panoramic',
                   path: 'panoramic',
-                  icon: 'fund-view',
                   authority: ['01'],
                   component: './truck/panoramic',
                 },
                 {
                   name: 'detection',
                   path: 'detection',
-                  icon: 'check',
                   component: './truck/detection',
                 },
                 {
                   name: 'statistic',
                   path: 'statistic',
-                  icon: 'bar-chart',
                   component: './truck/statistic',
                 },
                 {
                   name: 'failure',
                   path: 'failure',
-                  icon: 'bug',
                   component: './truck/failure',
                 },
-                // {
-                //   name: 'information',
-                //   path: 'information',
-                //   icon: 'file-text',
-                //   component: './truck/information',
-                // },
                 {
                   name: 'warning',
                   path: 'warning',
-                  icon: 'warning',
                   component: './truck/warning',
                 },
-              ]
-            },
-            {
-              path: '/research',
-              name: 'research',
-              icon: 'bulb',
-              authority: ['01'],
-              routes: [
-                {
-                  name: 'devices',
-                  path: 'devices',
-                  icon: 'mobile',
-                  component: './research/devices',
-                },
-                {
-                  name: 'warning',
-                  path: 'warning',
-                  icon: 'warning',
-                  component: './research/warning',
-                },
-              ]
-            },
-            {
-              path: '/agv',
-              name: 'agv',
-              icon: 'car',
-              routes: [
-                {
-                  name: 'panaroma',
-                  path: 'panaroma',
-                  icon: 'fund-view',
-                  component: './agv/panaroma',
-                },
-                {
-                  name: 'detection',
-                  path: 'detection',
-                  icon: 'check',
-                  component: './agv/detection',
-                },
-                {
-                  name: 'warning',
-                  path: 'warning',
-                  icon: 'warning',
-                  component: './agv/warning',
-                },
-              ]
-            },
-            {
-              path: '/vision',
-              name: 'vision',
-              icon: 'eye',
-              routes: [
-                {
-                  name: 'equipment',
-                  path: 'equipment',
-                  icon: 'eye',
-                  component: './vision/equipment',
-                },
-                {
-                  name: 'hub',
-                  path: 'hub',
-                  icon: 'minus-circle',
-                  component: './vision/hub',
-                }
               ]
             },
             {
