@@ -1,0 +1,57 @@
+.select {
+  width: 200px;
+  &:nth-child(1) {
+    margin-right: 24px;
+  }
+}
+
+.selectR {
+  width: 100px;
+  margin-left: 24px;
+}
+
+.rowContainer {
+  margin-top: 24px;
+  .paneContainer {
+    width: 100%;
+  }
+}
+
+.tabs {
+  background-color: #fff;
+  padding: 0 24px;
+}
+
+.cardContent { 
+  height: 160px;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filebar {
+  display: flex;
+  height: 50px;
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  align-items: center;
+  padding: 0 24px;
+  &:nth-child(n + 2) {
+    margin-top: 24px;
+  }
+  .iconContainer {
+    display: flex;
+    align-items: center;
+    .filename {
+      margin-left: 10px;
+    }
+  }
+  .updateTime {
+    flex: 1;
+    padding: 0 50px;
+    text-align: right;
+  }
+}
