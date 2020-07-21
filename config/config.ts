@@ -123,6 +123,120 @@ export default {
               component: './plan',
             },
             {
+              path: '/shiftApply',
+              name: 'shiftApply',
+              component: './shiftApply',
+            },
+            {
+              path: '/list',
+              name: 'list',
+              component: './list',
+            },
+            {
+              path: '/issue',
+              name: 'issue',
+              routes: [
+                {
+                  path: '/issue/board',
+                  name: 'board',
+                  component: './issue/board'
+                },
+                {
+                  path: '/issue/list',
+                  name: 'list',
+                  component: './issue/list'
+                },
+              ]              
+            },
+            {
+              path: '/statistics',
+              name: 'statistics',
+              routes: [
+                {
+                  path: '/statistics/amount',
+                  name: 'amount',
+                  component: './statistics/amount'
+                },
+                {
+                  path: '/statistics/auditAnalysis',
+                  name: 'auditAnalysis',
+                  component: './statistics/auditAnalysis'
+                },
+                {
+                  path: '/statistics/closingRate',
+                  name: 'closingRate',
+                  component: './statistics/closingRate'
+                },
+                {
+                  path: '/statistics/relatedDepartment',
+                  name: 'relatedDepartment',
+                  component: './statistics/relatedDepartment'
+                },
+              ]
+            },
+            {
+              path: '/discipline/checkPlan',
+              name: 'discipline.checkPlan',
+              component: './discipline/checkPlan',
+            },
+            {
+              path: '/discipline/checkBoard',
+              name: 'discipline.checkBoard',
+              component: './discipline/checkBoard',
+            },
+            {
+              path: '/discipline/checkShiftApply',
+              name: 'discipline.checkShiftApply',
+              component: './discipline/checkShiftApply',
+            },
+            {
+              path: '/discipline/check',
+              name: 'discipline.check',
+              component: './discipline/check',
+            },
+            {
+              path: '/discipline/checkStatistics',
+              name: 'discipline.checkStatistics',
+              routes: [
+                {
+                  path: '/discipline/checkStatistics/issueAmount',
+                  name: 'issueAmount',
+                  component: './discipline/checkStatistics/issueAmount',
+                },
+                {
+                  path: '/discipline/checkStatistics/scoreDiagram',
+                  name: 'scoreDiagram',
+                  component: './discipline/checkStatistics/scoreDiagram',
+                }
+              ]
+            },
+            {
+              path: '/basicData',
+              name: 'basicData',
+              routes: [
+                {
+                  path: '/basicData/list',
+                  name: 'list',
+                  component: './basicData/list'
+                },
+                {
+                  path: '/basicData/auditType',
+                  name: 'auditType',
+                  component: './basicData/auditType'
+                },
+                {
+                  path: '/basicData/issueType',
+                  name: 'issueType',
+                  component: './basicData/issueType'
+                },
+                {
+                  path: '/basicData/process',
+                  name: 'process',
+                  component: './basicData/process'
+                },
+              ]
+            },
+            {
               redirect: '/plan'
             },
           ],

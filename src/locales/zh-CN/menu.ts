@@ -24,14 +24,14 @@ export default {
   'menu.statistics.relatedDepartment': 'TOP问题对应部门',
 
   'menu.discipline': '工艺纪律',
-  'menu.discipline.CheckPlan': '工艺纪律检查计划',
-  'menu.discipline.CheckBoard': '工艺纪律检查看板',
-  'menu.discipline.CheckShiftApply': '工艺纪律调班申请',
-  'menu.discipline.Check': '工艺纪律检查',
+  'menu.discipline.checkPlan': '工艺纪律检查计划',
+  'menu.discipline.checkBoard': '工艺纪律检查看板',
+  'menu.discipline.checkShiftApply': '工艺纪律调班申请',
+  'menu.discipline.check': '工艺纪律检查',
 
-  'menu.discipline.Check.Statistics': '工艺纪律检查',
-  'menu.discipline.Check.Statistics.scoreDiagram': '得分推移图',
-  'menu.discipline.Check.Statistics.issueAmount': '问题数量统计',
+  'menu.discipline.checkStatistics': '工艺纪律检查统计',
+  'menu.discipline.checkStatistics.scoreDiagram': '得分推移图',
+  'menu.discipline.checkStatistics.issueAmount': '问题数量统计',
 
   'menu.basicData': '基础数据维护',
   'menu.basicData.list': '分层审核清单内容',
