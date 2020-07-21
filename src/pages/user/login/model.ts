@@ -1,7 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { routerRedux } from 'dva/router';
-import { fakeAccountLogin, getFakeCaptcha, login } from './service';
+import { getFakeCaptcha, login } from './service';
 import { getPageQuery, setAuthority } from './utils/utils';
 
 export interface StateType {
@@ -36,6 +35,7 @@ const Model: ModelType = {
 
   effects: {
     *login({ payload }, { call, put }) {
+      console.log('user-login-payload', payload);
       const response = yield call(login, payload);
       yield put({
         type: 'changeLoginStatus',
@@ -61,7 +61,7 @@ const Model: ModelType = {
             return;
           }
         }
-        window.location.href = redirect || '/truck/panoramic';
+        window.location.href = redirect || '/truck/detection';
         // yield put(routerRedux.replace(redirect || '/'));
       }
     },

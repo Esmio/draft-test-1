@@ -54,7 +54,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: '哈特机器人',
+  title: '耀皮康桥',
   pwa: false,
   iconfontUrl: '',
 } as DefaultSettings;

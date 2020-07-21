@@ -116,23 +116,14 @@ export default {
         {
           path: '/',
           component: '../layouts/BasicLayout',
-          Routes: ['src/pages/Authorized'],
-          // authority: ['01'],
           routes: [
             {
-              path: '/truck',
-              name: 'truck',
-              authority: ['01'],
-              routes: [
-                {
-                  name: 'detection',
-                  path: 'detection',
-                  component: './truck/detection',
-                },
-              ]
+              path: '/plan',
+              name: 'plan',
+              component: './plan',
             },
             {
-              redirect: '/truck/panoramic'
+              redirect: '/plan'
             },
           ],
         },
@@ -190,11 +181,9 @@ export default {
 
   proxy: {
     '/api/': {
-      target: 'http://jxappserver.jiuxiniot.com:8080',
-      // target: 'http://192.168.0.172:8090',
+      target: '/192.168.0.141:8005/ypkq/layer/',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
   },
-
 } as IConfig;

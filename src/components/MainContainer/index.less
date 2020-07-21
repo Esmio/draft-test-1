@@ -1,0 +1,29 @@
+.container {
+  height: calc(100vh - 162px);
+  .content {
+    height: calc(100vh - 270px);
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      min-height: 56px;
+      .search {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      .extra {
+        max-width: 300px;
+        min-width: 150px;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+  .bottom {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 60px;
+  }
+}

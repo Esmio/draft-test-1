@@ -9,7 +9,6 @@ import ProLayout, {
   Settings,
   // DefaultFooter,
   PageHeaderWrapper,
-  SettingDrawer,
 } from '@ant-design/pro-layout';
 import React, { useEffect } from 'react';
 import Link from 'umi/link';

@@ -62,15 +62,15 @@ class WrapFormItem extends Component<LoginItemProps, LoginItemState> {
     };
   }
 
-  // eslint-disable-next-line react/sort-comp
-  UNSAFE_componentDidMount() {
+  componentDidMount() {
     const { updateActive, name = '' } = this.props;
     if (updateActive) {
       updateActive(name);
     }
+    console.log('didMount!')
   }
 
-  UNSAFE_componentWillUnmount() {
+  componentWillUnmount() {
     clearInterval(this.interval);
   }
 
@@ -133,7 +133,7 @@ class WrapFormItem extends Component<LoginItemProps, LoginItemState> {
       type,
       form,
       tabUtil,
-      ...restProps
+      ...restProps   
     } = this.props;
     if (!name) {
       return null;
@@ -145,7 +145,6 @@ class WrapFormItem extends Component<LoginItemProps, LoginItemState> {
     // get getFieldDecorator props
     const options = this.getFormItemOptions(this.props);
     const otherProps = restProps || {};
-
     if (type === 'Captcha') {
       const inputProps = omit(otherProps, ['onGetCaptcha', 'countDown']);
 
