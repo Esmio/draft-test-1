@@ -402,8 +402,15 @@ const mockData: PlanWithDate[] = [
   },
 ];
 
-// console.log('columns', columns);
-// console.log('dataSource', dataSource);
+const processes = ['夹层预处理', '夹层烘弯', '夹层合片', '夹层终检'];
+const departmentMap = {
+  '夹层预处理': 4,
+  '钢化车间': 1,
+  '总成前后挡': 2,
+  '注塑车间': 2,
+  'GP12': 2,
+  '物流改切': 3,
+}
 
 interface Props {
   dispatch: Dispatch;
@@ -414,40 +421,22 @@ const Detection: React.FC<Props & StateType> = ({
 }) => {
   const [userName, setUserName] = useState('');
   const dataRef = useRef<{columns: any; dataSource: any}>({columns: [], dataSource: []});
-  const tempRef = useRef({});
-  const mergeCells = (text: string, array: any, columns: string) => {
-    let i = 0;
-    if(text !== tempRef.current[columns]) {
-      
-      tempRef.current[columns] = text;
-      console.log('temp[columns]', tempRef.current[columns])
-      console.log('text', text)
-      array.forEach((item: any) => {
-        console.log('item', item);
-        if(item.departmentName === tempRef.current[columns]) {
-          i += 1;
-        }
-      });
-    }
-    console.log('i', i);
-    console.log('text, array, columns', text, array, columns, tempRef.current[columns])
-    return i;
-  }
 
-  const convertData = (data: PlanWithDate[], mergeCells: (text: string, array: any, columns: string ) => number) => {
+  const convertData = (data: PlanWithDate[]) => {
     const columns: ColumnType<any>[] = [
       {
         title: '部门/车间',
         dataIndex: 'departmentName',
         align: 'center',
         key: 'departmentName',
-        render: (text, record) => {
-          const obj: { children: string; props: { rowSpan?: number } } = {
+        render: (text, { processName }, index) => {
+          console.log(index)
+          return {
             children: text,
-            props: {},
-          };
-          obj.props.rowSpan = mergeCells(record.departmentName, dataSource, 'departmentName');
-          return obj;
+            props: {
+              rowSpan: Object.keys(departmentMap).indexOf(processName) > -1 ? departmentMap[processName] : 0,
+            }
+          }
         }
       },
       {
@@ -458,7 +447,6 @@ const Detection: React.FC<Props & StateType> = ({
       }
     ];
     const columnsWithDate: ColumnGroupType<any>[] = [];
-    const processes = ['夹层预处理', '夹层烘弯', '夹层合片', '夹层终检'];
     const dataSource = new Array(processes.length);
     data.forEach(({ date, plan }) => {
       const columnWithDateItem = {
@@ -484,7 +472,6 @@ const Detection: React.FC<Props & StateType> = ({
       columnsWithDate.push(columnWithDateItem)
       // dataSource = [...dataSource, ...plan ]
       plan.forEach(({departmentId, departmentName, processId, processName, userPlan}) => {
-        // console.log('x,y,z:', departmentName, processName, userPlan)
         const index = processes.indexOf(processName);
         if(index > -1) {
           if(!dataSource[index]) {
@@ -518,7 +505,7 @@ const Detection: React.FC<Props & StateType> = ({
   // }, [userName]);
 
   useEffect(() => {
-    const {columns, dataSource} = convertData(mockData, mergeCells)
+    const {columns, dataSource} = convertData(mockData)
     dataRef.current = {columns, dataSource}
   }, [])
 
@@ -539,8 +526,6 @@ const Detection: React.FC<Props & StateType> = ({
       }
     })
   }, [userName])
-
-  console.log('tempRef', tempRef);
 
   return (
     <Main
