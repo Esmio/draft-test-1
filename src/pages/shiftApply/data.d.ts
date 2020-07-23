@@ -13,3 +13,15 @@ export type PagiType = {
   total?: number
 }
 
+// ListItemType
+export interface ListItemType {
+  auditComment: string;
+  createAt: string;
+  createUserId: string;
+  createUserName: string;
+  currDate: string;
+  id: string;
+  originalDate: string;
+  processId: string;
+  processName: string;
+}

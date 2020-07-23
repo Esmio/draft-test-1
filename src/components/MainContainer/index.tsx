@@ -6,20 +6,28 @@ import styles from './index.less';
 interface Props {
   search?: ReactNode,
   extra?: ReactNode,
+  control?: ReactNode,
   bottom?: ReactNode,
 }
 
-const Container: React.FC<Props> = ({ children, search, extra, bottom }) => {
+const Container: React.FC<Props> = ({ children, search, control, extra, bottom }) => {
   return (
     <Card
       className={styles.container}
     >
       <div className={styles.content}>
         {
-          search || extra ?
+          search || extra || control ?
           <section className={styles.top}>
-            <div className={styles.search}>
-              {search}
+            <div className={styles.left}>
+              { search && <div className={styles.search}>
+                  {search}
+                </div> }
+              {
+                control && <div className={styles.control}>
+                  {control}
+                </div>
+              }
             </div>
             <div className={styles.extra}>
               {extra}
