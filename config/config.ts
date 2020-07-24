@@ -199,14 +199,14 @@ export default {
               name: 'discipline.checkStatistics',
               routes: [
                 {
-                  path: '/discipline/checkStatistics/issueAmount',
-                  name: 'issueAmount',
-                  component: './discipline/checkStatistics/issueAmount',
-                },
-                {
                   path: '/discipline/checkStatistics/scoreDiagram',
                   name: 'scoreDiagram',
                   component: './discipline/checkStatistics/scoreDiagram',
+                },
+                {
+                  path: '/discipline/checkStatistics/issueAmount',
+                  name: 'issueAmount',
+                  component: './discipline/checkStatistics/issueAmount',
                 }
               ]
             },
@@ -225,14 +225,14 @@ export default {
                   component: './basicData/auditType'
                 },
                 {
+                  path: '/basicData/staffLevel',
+                  name: 'staffLevel',
+                  component: './basicData/staffLevel'
+                },
+                {
                   path: '/basicData/issueType',
                   name: 'issueType',
                   component: './basicData/issueType'
-                },
-                {
-                  path: '/basicData/process',
-                  name: 'process',
-                  component: './basicData/process'
                 },
               ]
             },

@@ -5,7 +5,6 @@ import { Table } from 'antd';
 
 import { StateType } from './model';
 import Main from '@/components/MainContainer';
-import Search from '@/components/Search';
 import ExportButton from '@/components/ExportButton';
 
 interface Props {
@@ -27,21 +26,62 @@ const CheckPlan: React.FC<Props & StateType> = ({
 
   return (
     <Main
-      search={
-        <Search
-          value={''}
-          onChange={onChange}
-          reset={reset}
-          onSearch={onSearch}
-        />
-      }
       extra={<ExportButton />}
     >
       <Table
         bordered
         size="small"
         pagination={false}
-        columns={[]}
+        columns={[
+          {
+            title: '负责区域',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月1日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月2日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月3日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月4日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月5日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月6日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+          {
+            title: '6月7日',
+            dataIndex: 'dutyPosition',
+            key: 'dutyPosition',
+            align: 'center',
+          },
+        ]}
         dataSource={[]}
         rowKey={({ processId }) => processId}
       />

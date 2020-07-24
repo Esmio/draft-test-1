@@ -36,8 +36,8 @@ export default {
   'menu.basicData': '基础数据维护',
   'menu.basicData.list': '分层审核清单内容',
   'menu.basicData.auditType': '分层审核审核类别',
+  'menu.basicData.staffLevel': '人员层级信息管理',
   'menu.basicData.issueType': '问题类别',
-  'menu.basicData.process': '工序',
 
   'menu.dashboard.workplace': '工作台',
   'menu.exception.403': '403',

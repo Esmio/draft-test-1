@@ -5,7 +5,7 @@ import { Table, Modal } from 'antd';
 
 import { StateType } from './model';
 import Main from '@/components/MainContainer';
-import ControlBar from './components/ControlBar';
+import ControlBar from '@/components/ControlBar';
 import Search from './components/Search';
 
 // import styles from './style.less'

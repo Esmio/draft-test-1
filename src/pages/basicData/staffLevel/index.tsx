@@ -5,14 +5,14 @@ import { Table } from 'antd';
 
 import { StateType } from './model';
 import Main from '@/components/MainContainer';
+import ControlBar from "@/components/ControlBar";
 import SearchForm from '@/components/SearchForm';
-import ControlBar from '@/components/ControlBar';
 
 interface Props {
   dispatch: Dispatch;
 }
 
-const BasicList: React.FC<Props & StateType> = ({
+const BasicAuditType: React.FC<Props & StateType> = ({
   dispatch,
 }) => {
 
@@ -28,7 +28,7 @@ const BasicList: React.FC<Props & StateType> = ({
   const onSearch = useCallback(() => {
   }, [])
 
-  // select rows
+    // select rows
   const handleRowSelected: 
     ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
     (selectedRowKeys, selectedRows) => {
@@ -38,80 +38,102 @@ const BasicList: React.FC<Props & StateType> = ({
 
   return (
     <Main
-      search={
-        <SearchForm
-          items={[
-            {
-              label: "审核类别",
-              name: 'auditType',
-              type: 'select',
-              typeOptions: [
-                {
-                  name: 'value1',
-                  value: 1,
-                },
-                {
-                  name: 'value2',
-                  value: 2,
-                },
-                {
-                  name: 'value3',
-                  value: 3,
-                },
-                {
-                  name: 'value4',
-                  value: 4,
-                }
-              ],
-            },
-          ]}
-          initialValues={{
-            auditType: 1,
-          }}
-          onFinish={onSearch}
+    search={
+      <SearchForm
+        items={[
+          {
+            label: "姓名",
+            name: 'name',
+            type: 'select',
+            typeOptions: [
+              {
+                name: 'value1',
+                value: 1,
+              },
+              {
+                name: 'value2',
+                value: 2,
+              },
+              {
+                name: 'value3',
+                value: 3,
+              },
+              {
+                name: 'value4',
+                value: 4,
+              }
+            ],
+          },
+          {
+            label: "所属部门/车间",
+            name: 'department',
+            type: 'select',
+            typeOptions: [
+              {
+                name: 'value1',
+                value: 1,
+              },
+              {
+                name: 'value2',
+                value: 2,
+              },
+              {
+                name: 'value3',
+                value: 3,
+              },
+              {
+                name: 'value4',
+                value: 4,
+              }
+            ],
+          }
+        ]}
+        initialValues={{
+          name: 1,
+          department: 1,
+        }}
+        onFinish={onSearch}
+      />
+    }
+      control={
+        <ControlBar
+          onCreate={onCreate}
+          onEdit={onEdit}
+          onRemove={onRemove}
         />
       }
-      control={<ControlBar
-        onCreate={onCreate}
-        onEdit={onEdit}
-        onRemove={onRemove}
-      />}
     >
       <Table
         bordered
         size="small"
         pagination={false}
-        rowSelection={{
-          type: 'checkbox',
-          onChange: handleRowSelected,
-        }}
         columns={[
           {
-            title: '审核类别',
+            title: '姓名',
             dataIndex: 'auditType',
             key: 'auditType',
             align: 'center',
           },
           {
-            title: '编号',
+            title: '职位',
             dataIndex: 'auditType',
             key: 'auditType',
             align: 'center',
           },
           {
-            title: '审核内容',
+            title: '所属部门/车间',
             dataIndex: 'auditType',
             key: 'auditType',
             align: 'center',
           },
           {
-            title: '适用层级',
+            title: '工序',
             dataIndex: 'auditType',
             key: 'auditType',
             align: 'center',
           },
           {
-            title: '适用工序',
+            title: '层级',
             dataIndex: 'auditType',
             key: 'auditType',
             align: 'center',
@@ -121,8 +143,12 @@ const BasicList: React.FC<Props & StateType> = ({
             dataIndex: 'auditType',
             key: 'auditType',
             align: 'center',
-          }
+          },
         ]}
+        rowSelection={{
+          type: 'checkbox',
+          onChange: handleRowSelected,
+        }}
         dataSource={[]}
         rowKey={({ processId }) => processId}
       />
@@ -132,10 +158,10 @@ const BasicList: React.FC<Props & StateType> = ({
 
 export default connect(
   ({
-    basicList: {
+    basicAuditType: {
     },
   }: {
-    basicList: StateType;
+    basicAuditType: StateType;
   }) => ({
   }),
-)(BasicList);
+)(BasicAuditType);

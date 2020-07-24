@@ -5,8 +5,6 @@ import { Table } from 'antd';
 
 import { StateType } from './model';
 import Main from '@/components/MainContainer';
-import Search from '@/components/Search';
-import ExportButton from '@/components/ExportButton';
 
 interface Props {
   dispatch: Dispatch;
@@ -15,33 +13,93 @@ interface Props {
 const IssueList: React.FC<Props & StateType> = ({
   dispatch,
 }) => {
+  const [key, setKey] = useState('1');
 
-  const onChange = useCallback((e) => {
-  }, [])
+  const handleTabChange = useCallback(
+    (key) => {
+      setKey(key);
+    },
+    [],
+  )
 
-  const reset = useCallback(() => {
-  }, [])
-
-  const onSearch = useCallback(() => {
-  }, [])
+  console.log('key', key);
 
   return (
     <Main
-      search={
-        <Search
-          value={''}
-          onChange={onChange}
-          reset={reset}
-          onSearch={onSearch}
-        />
-      }
-      extra={<ExportButton />}
+      tabList={[
+        {
+          key: '1',
+          tab: '待处理'
+        },
+        {
+          key: '2',
+          tab: '待验证'
+        },
+        {
+          key: '3',
+          tab: '未通过'
+        },
+        {
+          key: '4',
+          tab: '已完成'
+        },
+      ]}
+      onTabChange={handleTabChange}
     >
       <Table
         bordered
         size="small"
         pagination={false}
-        columns={[]}
+        columns={[
+          {
+            title: '问题编号',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '审核时间',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '区域',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '问题描述',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '问题图片',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '下次汇报时间',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '发起人',
+            dataIndex: 'issueNumber',
+            key: 'issueNumber',
+            align: 'center',
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            key: 'action',
+            align: 'center',
+          },
+        ]}
         dataSource={[]}
         rowKey={({ processId }) => processId}
       />
