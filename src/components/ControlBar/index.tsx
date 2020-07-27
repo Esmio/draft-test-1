@@ -5,12 +5,16 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import styles from './index.less';
 
 interface Props {
+  canEdit?: boolean;
+  canDelete?: boolean;
   onCreate: () => void;
   onEdit: () => void;
   onRemove: () => void;
 }
 
 const ControlBar: React.FC<Props> = ({
+  canEdit,
+  canDelete,
   onCreate,
   onEdit,
   onRemove,
@@ -26,6 +30,7 @@ const ControlBar: React.FC<Props> = ({
       新建
     </Button>
     <Button
+      disabled={!canEdit}
       icon={<EditOutlined />}
       className={styles.buttonLeft}
       onChange={() => {
@@ -35,6 +40,7 @@ const ControlBar: React.FC<Props> = ({
       编辑
     </Button>
     <Button
+      disabled={!canDelete}
       icon={<DeleteOutlined />}
       className={styles.buttonLeft}
       onClick={() => {
