@@ -2,6 +2,7 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { 
   fetchFakeData,
+  queryAuditList,
 } from './service';
 
 import { 
@@ -21,6 +22,7 @@ export interface ModelType {
   state: StateType;
   effects: {
     // fetch: Effect;
+    queryAuditList: Effect;
     fetchFake: Effect;
   };
   reducers: {
@@ -36,6 +38,10 @@ const Model: ModelType = {
   },
 
   effects: {
+    *queryAuditList({ payload }, { call, put }) {
+      const res = yield call(queryAuditList, payload);
+      console.log('audit-list', res);
+    },
     // mock 数据
     *fetchFake({ payload }, { call, put }) {
       const data = yield call(fetchFakeData);

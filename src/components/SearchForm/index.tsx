@@ -46,8 +46,8 @@ const SearchForm: React.FC<Props> = ({
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      {items.map(({ type, typeOptions, ...itemProps }) => (
-        <Form.Item {...itemProps}>
+      {items.map(({ type, typeOptions, ...itemProps }, idx) => (
+        <Form.Item {...itemProps} key={idx}>
           {getComByType(type, typeOptions)}
         </Form.Item>
       ))}

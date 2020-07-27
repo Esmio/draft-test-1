@@ -16,6 +16,16 @@ const BasicList: React.FC<Props & StateType> = ({
   dispatch,
 }) => {
 
+  useEffect(() => {
+    dispatch({
+      type: 'basicList/queryAuditList',
+      payload: {
+        page: 1,
+        size: 10
+      }
+    })
+  }, [])
+
   const onCreate = useCallback(() => {
   }, [])
 

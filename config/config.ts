@@ -295,7 +295,7 @@ export default {
 
   proxy: {
     '/api/': {
-      target: '/192.168.0.141:8005/ypkq/layer/',
+      target: '192.168.0.122:8700/yp_gate/ypkq/layer',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },

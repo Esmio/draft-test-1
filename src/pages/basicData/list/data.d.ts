@@ -7,9 +7,13 @@ export interface DateRangeQuery {
   [index: string]: string;
 }
 // 分页
-export type PagiType = {
-  pageNum: number;
-  pageSize: number;
+export interface PagiType {
+  page: number;
+  size: number;
   total?: number
 }
-
+// querytype
+export interface QueryType extends PagiType {
+  auditCategoryId: number;
+  userName: string;
+}
