@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Form, Input, Select, Button } from 'antd';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
@@ -41,6 +41,7 @@ const CustomForm: React.FC<Props> = ({
   onFinishFailed,
 }) => {
   const [form] = Form.useForm();
+
   return (
     <Form
       {...layout}

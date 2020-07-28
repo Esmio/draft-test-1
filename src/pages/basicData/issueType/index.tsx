@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, ReactText } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
 
 import { StateType } from './model';
 import Main from '@/components/MainContainer';
 import ControlBar from "@/components/ControlBar";
 import SearchForm from '@/components/SearchForm';
+import CustomForm from '@/components/CustomForm';
 
 interface Props {
   dispatch: Dispatch;
@@ -14,10 +15,21 @@ interface Props {
 
 const BasicAuditType: React.FC<Props & StateType> = ({
   dispatch,
+  loading,
+  list,
 }) => {
 
-  const onCreate = useCallback(() => {
+  const [createModalVisible, setCreateModalVisible] = useState(false)
+
+  useEffect(() => {
+    dispatch({
+      type: 'issueBasicType/list',
+    })
   }, [])
+
+  const onCreate = useCallback(() => {
+    setCreateModalVisible(true);
+  }, [createModalVisible])
 
   const onEdit = useCallback(() => {
   }, [])
@@ -28,12 +40,25 @@ const BasicAuditType: React.FC<Props & StateType> = ({
   const onSearch = useCallback(() => {
   }, [])
 
+  const handleCreateOk = useCallback((values) => {
+    dispatch({
+      type: 'issueBasicType/create',
+      payload: values,
+      callback: () => {
+        setCreateModalVisible(false)
+      }
+    })
+  }, [createModalVisible])
+
+  const handleCreateModalCancle = useCallback(() => {
+    setCreateModalVisible(false);
+  }, [createModalVisible])
+
     // select rows
   const handleRowSelected: 
     ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
-    (selectedRowKeys, selectedRows) => {
-      console.log('selectedRowKeys', selectedRowKeys)
-      console.log('selectedRows', selectedRows)
+    (_, selectedRows) => {
+
     }
 
   return (
@@ -43,30 +68,12 @@ const BasicAuditType: React.FC<Props & StateType> = ({
         items={[
           {
             label: "问题类别",
-            name: 'auditType',
-            type: 'select',
-            typeOptions: [
-              {
-                name: 'value1',
-                value: 1,
-              },
-              {
-                name: 'value2',
-                value: 2,
-              },
-              {
-                name: 'value3',
-                value: 3,
-              },
-              {
-                name: 'value4',
-                value: 4,
-              }
-            ],
+            name: 'name',
+            type: 'input',
           }
         ]}
         initialValues={{
-          auditType: 1,
+          name: '',
         }}
         onFinish={onSearch}
       />
@@ -81,19 +88,20 @@ const BasicAuditType: React.FC<Props & StateType> = ({
     >
       <Table
         bordered
+        loading={loading}
         size="small"
         pagination={false}
         columns={[
           {
-            title: '审核类别',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            title: '问题类别',
+            dataIndex: 'name',
+            key: 'name',
             align: 'center',
           },
           {
             title: '添加时间',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'createTime',
+            key: 'createTime',
             align: 'center',
           },
         ]}
@@ -101,19 +109,44 @@ const BasicAuditType: React.FC<Props & StateType> = ({
           type: 'checkbox',
           onChange: handleRowSelected,
         }}
-        dataSource={[]}
-        rowKey={({ processId }) => processId}
+        dataSource={list}
+        rowKey={({ id }) => id}
       />
+      <Modal
+        visible={createModalVisible}
+        title="添加问题类别"
+        footer={null}
+        onCancel={handleCreateModalCancle}
+      >
+        <CustomForm
+          name="create"
+          items={[
+            {
+              label: "问题类别",
+              name: 'name',
+              type: 'input',
+            }
+          ]}
+          initialValues={{
+            name: '',
+          }}
+          onFinish={handleCreateOk}
+        />
+      </Modal>
     </Main>
   );
 };
 
 export default connect(
   ({
-    basicAuditType: {
+    issueBasicType: {
+      loading,
+      list,
     },
   }: {
-    basicAuditType: StateType;
+    issueBasicType: StateType;
   }) => ({
+    loading,
+    list,
   }),
 )(BasicAuditType);

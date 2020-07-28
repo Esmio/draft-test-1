@@ -17,6 +17,15 @@ export interface ListItem {
   parentName: string;
 }
 
+export interface EditQuery {
+  id: string;
+  problemCategoryName: string;
+}
+
+export interface DeleteQuery {
+  id: string;
+}
+
 // 分页
 export type PagiType = {
   pageNum: number;

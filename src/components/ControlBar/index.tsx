@@ -33,7 +33,7 @@ const ControlBar: React.FC<Props> = ({
       disabled={!canEdit}
       icon={<EditOutlined />}
       className={styles.buttonLeft}
-      onChange={() => {
+      onClick={() => {
         onEdit()
       }}
     >
