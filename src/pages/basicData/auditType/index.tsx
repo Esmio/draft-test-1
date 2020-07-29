@@ -33,9 +33,7 @@ const BasicAuditType: React.FC<Props & StateType> = ({
   }, [createModalVisible]);
   // 改
   const onEdit = useCallback(() => {
-
     setEditModalVisible(true);
-
   }, [selectedRows]);
 
   // 删除提交

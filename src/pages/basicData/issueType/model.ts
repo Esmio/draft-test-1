@@ -57,11 +57,25 @@ const Model: ModelType = {
       }
       yield put({ type: 'save', payload: { loading: false }});
     },
-    *remove({}, {}) {
-
+    *remove({ payload, callback }, { call, put }) {
+      yield put({ type: 'save', payload: { loading: true }});
+      const res = yield call(remove, payload);
+      if(res.errCode === 0) {
+        message.success('已删除！');
+        if(callback) callback();
+        yield put({ type: 'list' });
+      }
+      yield put({ type: 'save', payload: { loading: false }});
     },
-    *update({}, {}) {
-      
+    *update({ payload, callback }, { call, put }) {
+      yield put({ type: 'save', payload: { loading: true }});
+      const res = yield call(update, payload);
+      if(res.errCode === 0) {
+        message.success('修改成功！');
+        yield put({ type: 'list' });
+        if(callback) callback();
+      }
+      yield put({ type: 'save', payload: { loading: false }});
     },
     *list(_, { call, put }) {
       yield put({ type: 'save', payload: { loading: true }});

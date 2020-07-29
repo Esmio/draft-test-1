@@ -14,7 +14,6 @@ export interface PagiType {
 }
 
 export interface CreateQuery {
-  fraction: string;
   name: string;
 }
 
@@ -24,12 +23,11 @@ export interface DeleteQuery {
 
 export interface ListItem {
   createTime: string;
-  fraction: string;
-  id: string;
-  name: string;
-  userName: string;
+  parentId: string;
+  parentName: string;
 }
 
-export interface UpdateQuery extends CreateQuery {
+export interface UpdateQuery {
   id: string;
+  problemCategoryName: string;
 }

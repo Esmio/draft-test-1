@@ -4,6 +4,7 @@ import { Dispatch } from 'redux';
 import { Table, Modal } from 'antd';
 
 import { StateType } from './model';
+import { ListItem } from './data.d';
 import Main from '@/components/MainContainer';
 import ControlBar from "@/components/ControlBar";
 import SearchForm from '@/components/SearchForm';
@@ -19,23 +20,42 @@ const BasicAuditType: React.FC<Props & StateType> = ({
   list,
 }) => {
 
-  const [createModalVisible, setCreateModalVisible] = useState(false)
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<ListItem[]>([])
 
   useEffect(() => {
     dispatch({
       type: 'issueBasicType/list',
     })
   }, [])
-
+  // button
   const onCreate = useCallback(() => {
     setCreateModalVisible(true);
   }, [createModalVisible])
 
   const onEdit = useCallback(() => {
+    setEditModalVisible(true);
   }, [])
 
+  // 删除提交
   const onRemove = useCallback(() => {
-  }, [])
+    console.log('current-selected-rows', selectedRows);
+    Modal.confirm({
+      title: '确定删除吗？',
+      onOk: () => {
+        dispatch({
+          type: 'issueBasicType/remove',
+          payload: {
+            id: selectedRows[0].parentId,
+          },
+          callback: () => {
+            setSelectedRows([]);
+          }
+        })
+      }
+    })
+  }, [selectedRows])
 
   const onSearch = useCallback(() => {
   }, [])
@@ -58,8 +78,25 @@ const BasicAuditType: React.FC<Props & StateType> = ({
   const handleRowSelected: 
     ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
     (_, selectedRows) => {
-
+      setSelectedRows(selectedRows)
     }
+  // 编辑弹框提交
+  const handleEditConfirm = useCallback((values) => {
+    dispatch({
+      type: 'issueBasicType/update',
+      payload: {
+        ...values,
+        id: selectedRows[0].parentId,
+      },
+      callback: () => {
+        setEditModalVisible(false);
+      }
+    })
+  }, [editModalVisible])
+  // 编辑弹框取消
+  const handleEditModalCancel = useCallback(() => {
+    setEditModalVisible(false)
+  }, [editModalVisible])
 
   return (
     <Main
@@ -80,6 +117,9 @@ const BasicAuditType: React.FC<Props & StateType> = ({
     }
       control={
         <ControlBar
+          canEdit={selectedRows.length === 1}
+          // canDelete={selectedRows.length > 0}
+          canDelete={selectedRows.length === 1}
           onCreate={onCreate}
           onEdit={onEdit}
           onRemove={onRemove}
@@ -94,8 +134,8 @@ const BasicAuditType: React.FC<Props & StateType> = ({
         columns={[
           {
             title: '问题类别',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'parentName',
+            key: 'parentName',
             align: 'center',
           },
           {
@@ -110,7 +150,7 @@ const BasicAuditType: React.FC<Props & StateType> = ({
           onChange: handleRowSelected,
         }}
         dataSource={list}
-        rowKey={({ id }) => id}
+        rowKey={({ parentId }) => parentId}
       />
       <Modal
         visible={createModalVisible}
@@ -131,6 +171,28 @@ const BasicAuditType: React.FC<Props & StateType> = ({
             name: '',
           }}
           onFinish={handleCreateOk}
+        />
+      </Modal>
+      <Modal
+        visible={editModalVisible}
+        title="编辑问题类别"
+        onCancel={handleEditModalCancel}
+        footer={null}
+        destroyOnClose
+      >
+        <CustomForm
+          name="edit"
+          items={[
+            {
+              label: "问题类别",
+              name: 'problemCategoryName',
+              type: 'input',
+            }
+          ]}
+          initialValues={{
+            problemCategoryName: selectedRows[0]?.parentName,
+          }}
+          onFinish={handleEditConfirm}
         />
       </Modal>
     </Main>
