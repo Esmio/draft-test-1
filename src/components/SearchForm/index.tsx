@@ -13,6 +13,7 @@ interface TypeOption {
 interface WithTypeItemProps extends FormItemProps {
   type: 'input' | 'select';
   typeOptions?: TypeOption | any;
+  loading?: boolean;
 } 
 
 interface Props {
@@ -46,9 +47,9 @@ const SearchForm: React.FC<Props> = ({
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      {items.map(({ type, typeOptions, ...itemProps }, idx) => (
+      {items.map(({ type, typeOptions, loading, ...itemProps }, idx) => (
         <Form.Item {...itemProps} key={idx}>
-          {getComByType(type, typeOptions)}
+          {getComByType({type, typeOptions, loading})}
         </Form.Item>
       ))}
       <Form.Item>
@@ -61,12 +62,23 @@ const SearchForm: React.FC<Props> = ({
   )
 }
 
-function getComByType(type: string, typeOptions?: any): ReactNode {
+export interface TypeOptions {
+  name: string;
+  value: string | number;
+}
+
+interface TypeParams {
+  type: string;
+  typeOptions: TypeOptions[];
+  loading?: boolean;
+}
+
+function getComByType({type, typeOptions, loading}: TypeParams): ReactNode {
   switch(type) {
     case 'input':
       return <Input />
     case 'select':
-      return <Select style={{width: 180}}>
+      return <Select loading={loading} style={{width: 180}}>
         {typeOptions?.map(({ value, name }: TypeOption) => (
           <Option key={value} value={value}>{name}</Option>
         ))}

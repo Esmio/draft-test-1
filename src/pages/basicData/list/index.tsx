@@ -14,17 +14,27 @@ interface Props {
 
 const BasicList: React.FC<Props & StateType> = ({
   dispatch,
+  loading,
+  selectLoading,
+  list,
+  typeList,
 }) => {
 
   useEffect(() => {
     dispatch({
-      type: 'basicList/queryAuditList',
+      type: 'basicList/list',
       payload: {
         page: 1,
         size: 10
       }
     })
+    dispatch({type: 'basicList/getTypeList'})
   }, [])
+  
+  console.log('typeList', typeList);
+  console.log('selectLoading', selectLoading);
+  console.log('list', list);
+  console.log('typeList[0]?.value', typeList[0]?.value);
 
   const onCreate = useCallback(() => {
   }, [])
@@ -35,7 +45,8 @@ const BasicList: React.FC<Props & StateType> = ({
   const onRemove = useCallback(() => {
   }, [])
 
-  const onSearch = useCallback(() => {
+  const onSearch = useCallback((values) => {
+    console.log('values', values);
   }, [])
 
   // select rows
@@ -53,30 +64,14 @@ const BasicList: React.FC<Props & StateType> = ({
           items={[
             {
               label: "审核类别",
-              name: 'auditType',
+              name: 'auditCategoryId',
               type: 'select',
-              typeOptions: [
-                {
-                  name: 'value1',
-                  value: 1,
-                },
-                {
-                  name: 'value2',
-                  value: 2,
-                },
-                {
-                  name: 'value3',
-                  value: 3,
-                },
-                {
-                  name: 'value4',
-                  value: 4,
-                }
-              ],
+              loading: selectLoading,
+              typeOptions: typeList,
             },
           ]}
           initialValues={{
-            auditType: 1,
+            auditCategoryId: typeList[0]?.value,
           }}
           onFinish={onSearch}
         />
@@ -98,43 +93,43 @@ const BasicList: React.FC<Props & StateType> = ({
         columns={[
           {
             title: '审核类别',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'auditCategoryName',
+            key: 'auditCategoryName',
             align: 'center',
           },
           {
             title: '编号',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'no',
+            key: 'no',
             align: 'center',
           },
           {
             title: '审核内容',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'auditComment',
+            key: 'auditComment',
             align: 'center',
           },
           {
             title: '适用层级',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'useLevel',
+            key: 'useLevel',
             align: 'center',
           },
           {
             title: '适用工序',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'processCategoryDtoList.processName',
+            key: 'processCategoryDtoList.processName',
             align: 'center',
           },
           {
             title: '添加时间',
-            dataIndex: 'auditType',
-            key: 'auditType',
+            dataIndex: 'createTime',
+            key: 'createTime',
             align: 'center',
           }
         ]}
-        dataSource={[]}
-        rowKey={({ processId }) => processId}
+        dataSource={list}
+        rowKey={({ id }) => id}
       />
     </Main>
   );
@@ -143,9 +138,17 @@ const BasicList: React.FC<Props & StateType> = ({
 export default connect(
   ({
     basicList: {
+      loading,
+      selectLoading,
+      list,
+      typeList,
     },
   }: {
     basicList: StateType;
   }) => ({
+    loading,
+    selectLoading,
+    list,
+    typeList,
   }),
 )(BasicList);

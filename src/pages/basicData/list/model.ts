@@ -2,14 +2,17 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { 
   fetchFakeData,
-  queryAuditList,
+  list,
+  getTypeList,
 } from './service';
-
-import { 
-} from './data.d';
+import { TypeListItem } from './data.d';
+import { TypeOptions } from '@/components/SearchForm';
 
 export interface StateType {
   loading: boolean;
+  selectLoading: boolean;
+  typeList: TypeOptions[];
+  list: never[];
 }
 
 export type Effect = (
@@ -22,7 +25,8 @@ export interface ModelType {
   state: StateType;
   effects: {
     // fetch: Effect;
-    queryAuditList: Effect;
+    list: Effect;
+    getTypeList: Effect;
     fetchFake: Effect;
   };
   reducers: {
@@ -35,12 +39,37 @@ const Model: ModelType = {
 
   state: {
     loading: false,
+    selectLoading: false,
+    list: [],
+    typeList: [],
   },
 
   effects: {
-    *queryAuditList({ payload }, { call, put }) {
-      const res = yield call(queryAuditList, payload);
-      console.log('audit-list', res);
+    *list({ payload }, { call, put }) {
+      yield put({ type: 'save', payload: { loading: true }});
+      const res = yield call(list, payload);
+      if(res.errCode === 0) 
+        yield put({ type: 'save', payload: { list: res.data.list } });
+      yield put({ type: 'save', payload: { loading: true }});
+    },
+    *getTypeList(_, { call, put }) {
+      yield put({ type: 'save', payload: { selectLoading: true } });
+      const res = yield call(getTypeList);
+      if(res.errCode === 0)
+        yield put({ 
+          type: 'save',
+          payload:
+          { 
+            typeList: res.data.map(({
+              parentId: value,
+              parentName: name
+            }: TypeListItem) => ({
+              name,
+              value,
+            }))
+          }
+        })
+      yield put({ type: 'save', payload: { selectLoading: false } });
     },
     // mock 数据
     *fetchFake({ payload }, { call, put }) {

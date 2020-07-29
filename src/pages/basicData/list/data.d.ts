@@ -14,6 +14,28 @@ export interface PagiType {
 }
 // querytype
 export interface QueryType extends PagiType {
-  auditCategoryId: number;
+  auditCategoryId: string;
+}
+
+export interface CreateQuery {
+  auditCategoryId: string;
+  auditComment: string;
+  no: string;
+  processIds: string[];
+  useLevel: string;
   userName: string;
+}
+
+export interface RemoveQuery {
+  id: string;
+}
+
+export interface UpdateQuery extends CreateQuery {
+  id: string;
+}
+
+export interface TypeListItem {
+  createTime: string;
+  parentId: string;
+  parentName: string;
 }
