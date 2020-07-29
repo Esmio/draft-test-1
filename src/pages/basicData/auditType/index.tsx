@@ -34,13 +34,14 @@ const BasicAuditType: React.FC<Props & StateType> = ({
   // 改
   const onEdit = useCallback(() => {
     setEditModalVisible(true);
-  }, [selectedRows]);
+  }, [editModalVisible]);
 
   // 删除提交
   const onRemove = useCallback(() => {
-    console.log('current-selected-rows', selectedRows);
     Modal.confirm({
       title: '确定删除吗？',
+      okText: '确定',
+      cancelText: '取消',
       onOk: () => {
         dispatch({
           type: 'basicAuditType/deleteAuditType',
@@ -55,7 +56,7 @@ const BasicAuditType: React.FC<Props & StateType> = ({
     })
   }, [selectedRows])
 
-    // select rows
+  // select rows
   const handleRowSelected: 
     ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
     (_, selectedRows) => {

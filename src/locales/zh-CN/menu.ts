@@ -38,6 +38,7 @@ export default {
   'menu.basicData.auditType': '分层审核审核类别',
   'menu.basicData.staffLevel': '人员层级信息管理',
   'menu.basicData.issueType': '问题类别',
+  'menu.basicData.severity': '问题严重度',
 
   'menu.dashboard.workplace': '工作台',
   'menu.exception.403': '403',

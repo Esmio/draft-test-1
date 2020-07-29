@@ -234,6 +234,11 @@ export default {
                   name: 'issueType',
                   component: './basicData/issueType'
                 },
+                {
+                  path: '/basicData/severity',
+                  name: 'severity',
+                  component: './basicData/severity'
+                },
               ]
             },
             {
