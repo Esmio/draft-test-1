@@ -13,3 +13,10 @@ export type PagiType = {
   total?: number
 }
 
+export interface CreateQuery {
+  departmentId: string;
+  jobLevel: string;
+  processId: string;
+  userId: string;
+  userName: string;
+}
