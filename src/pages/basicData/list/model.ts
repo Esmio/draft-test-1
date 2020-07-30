@@ -68,7 +68,7 @@ const Model: ModelType = {
         const { list, page, size, total } = res.data;
         yield put({ 
           type: 'save',
-          payload: { 
+          payload: {
             list,
             pagination: {
               page,
@@ -106,14 +106,14 @@ const Model: ModelType = {
       }
       yield put({ type: 'save', payload: { loading: false }});
     },
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { select, call, put }) {
+      const { id, ...rest } = payload;
       yield put({ type: 'save', payload: { loading: false }});
-      const res = yield call(remove, payload);
+      const res = yield call(remove, { id });
       if(res.errCode === 0) {
         message.success('已删除！')
         yield put({type: 'list', payload: {
-          page: 1,
-          size: 10,
+          ...rest,
         }});
         if(callback) callback();
       }

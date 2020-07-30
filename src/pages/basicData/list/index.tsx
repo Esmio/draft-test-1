@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, ReactText } from 'react';
+import React, { useState, useEffect, useCallback, ReactText, useRef } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
 import { Table, Modal } from 'antd';
@@ -25,7 +25,9 @@ const BasicList: React.FC<Props & StateType> = ({
 }) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<ListItem[]>([])
+  const [selectedRows, setSelectedRows] = useState<ListItem[]>([]);
+
+  const searchRef = useRef({})
 
   useEffect(() => {
     dispatch({
@@ -38,8 +40,6 @@ const BasicList: React.FC<Props & StateType> = ({
     dispatch({type: 'basicList/getTypeList'});
     dispatch({type: 'basicList/getProcess'});
   }, [])
-
-  console.log('processList', processList);
 
   // 增
   const onCreate = useCallback(() => {
@@ -61,6 +61,8 @@ const onRemove = useCallback(() => {
         type: 'basicList/remove',
         payload: {
           id: selectedRows[0].id,
+          ...searchRef.current,
+          ...pagination,
         },
         callback: () => {
           setSelectedRows([]);
@@ -71,9 +73,14 @@ const onRemove = useCallback(() => {
 }, [selectedRows])
 
   const onSearch = useCallback((values) => {
+    searchRef.current = values;
     dispatch({
-      type: 'list',
-      payload: values,
+      type: 'basicList/list',
+      payload: {
+        ...values,
+        page: 1,
+        size: 10,
+      },
     })
   }, [])
 
@@ -117,6 +124,21 @@ const onRemove = useCallback(() => {
     setCreateModalVisible(false);
   }, [createModalVisible])
 
+  // 分页
+  const handlePageChange = useCallback(
+    (page, size) => {
+      dispatch({
+        type: 'basicList/list',
+        payload: {
+          page,
+          size,
+          ...searchRef.current,
+        }
+      })
+    },
+    [],
+  )
+
   return (
     <Main
       search={
@@ -152,7 +174,8 @@ const onRemove = useCallback(() => {
         pagination={{
           current: pagination.page,
           pageSize: pagination.size,
-          total: pagination.total
+          total: pagination.total,
+          onChange: handlePageChange,
         }}
         rowSelection={{
           type: 'checkbox',
