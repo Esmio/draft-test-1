@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import { Form, Input, Select, Button } from 'antd';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
@@ -31,6 +31,7 @@ const SearchForm: React.FC<Props> = ({
   onFinish,
   onFinishFailed,
 }) => {
+  
   const [form] = Form.useForm();
   const handleReset = useCallback(
     () => {
@@ -38,6 +39,12 @@ const SearchForm: React.FC<Props> = ({
     },
     [],
   )
+
+  useEffect(() => {
+    if(!initialValues) return;
+    form.setFieldsValue(initialValues)
+  }, [initialValues]);
+
   return (
     <Form
       form={form}

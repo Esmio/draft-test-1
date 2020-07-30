@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, ReactText } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
 
 import { StateType } from './model';
+import { ListItem, ProcessDto } from './data.d';
 import Main from '@/components/MainContainer';
 import SearchForm from '@/components/SearchForm';
 import ControlBar from '@/components/ControlBar';
+import CustomForm from '@/components/CustomForm';
 
 interface Props {
   dispatch: Dispatch;
@@ -18,7 +20,12 @@ const BasicList: React.FC<Props & StateType> = ({
   selectLoading,
   list,
   typeList,
+  pagination,
+  processList,
 }) => {
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<ListItem[]>([])
 
   useEffect(() => {
     dispatch({
@@ -28,34 +35,87 @@ const BasicList: React.FC<Props & StateType> = ({
         size: 10
       }
     })
-    dispatch({type: 'basicList/getTypeList'})
+    dispatch({type: 'basicList/getTypeList'});
+    dispatch({type: 'basicList/getProcess'});
   }, [])
-  
-  console.log('typeList', typeList);
-  console.log('selectLoading', selectLoading);
-  console.log('list', list);
-  console.log('typeList[0]?.value', typeList[0]?.value);
 
+  console.log('processList', processList);
+
+  // 增
   const onCreate = useCallback(() => {
-  }, [])
-
+    setCreateModalVisible(true);
+  }, [createModalVisible]);
+  // 改
   const onEdit = useCallback(() => {
-  }, [])
+    setEditModalVisible(true);
+  }, [editModalVisible]);
 
-  const onRemove = useCallback(() => {
-  }, [])
+// 删除提交
+const onRemove = useCallback(() => {
+  Modal.confirm({
+    title: '确定删除吗？',
+    okText: '确定',
+    cancelText: '取消',
+    onOk: () => {
+      dispatch({
+        type: 'basicList/remove',
+        payload: {
+          id: selectedRows[0].id,
+        },
+        callback: () => {
+          setSelectedRows([]);
+        }
+      })
+    }
+  })
+}, [selectedRows])
 
   const onSearch = useCallback((values) => {
-    console.log('values', values);
+    dispatch({
+      type: 'list',
+      payload: values,
+    })
   }, [])
 
   // select rows
   const handleRowSelected: 
     ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
-    (selectedRowKeys, selectedRows) => {
-      console.log('selectedRowKeys', selectedRowKeys)
-      console.log('selectedRows', selectedRows)
+    (_, selectedRows) => {
+      setSelectedRows(selectedRows);
     }
+  
+  // 创建弹框提交
+  const handleCreateOk = useCallback((values) => {
+    dispatch({
+      type: 'basicList/create',
+      payload: {...values, useLevel: values.useLevel.join(',')},
+      callback: () => {
+        setCreateModalVisible(false);
+      }
+    })
+  }, [])
+  // 编辑弹框提交
+  const handleEditConfirm = useCallback((values) => {
+    dispatch({
+      type: 'basicList/update',
+      payload: {
+        ...values,
+        useLevel: values.useLevel.join(','),
+        id: selectedRows[0].id,
+      },
+      callback: () => {
+        setEditModalVisible(false);
+      }
+    })
+  }, [editModalVisible])
+  // 编辑弹框取消
+  const handleEditModalCancel = useCallback(() => {
+    setEditModalVisible(false)
+  }, [editModalVisible])
+
+  const handleCreateCancel = useCallback(() => {
+    setCreateModalVisible(false);
+  }, [createModalVisible])
 
   return (
     <Main
@@ -77,6 +137,9 @@ const BasicList: React.FC<Props & StateType> = ({
         />
       }
       control={<ControlBar
+        canEdit={selectedRows.length === 1}
+        // canDelete={selectedRows.length > 0}
+        canDelete={selectedRows.length === 1}
         onCreate={onCreate}
         onEdit={onEdit}
         onRemove={onRemove}
@@ -84,8 +147,13 @@ const BasicList: React.FC<Props & StateType> = ({
     >
       <Table
         bordered
+        loading={loading}
         size="small"
-        pagination={false}
+        pagination={{
+          current: pagination.page,
+          pageSize: pagination.size,
+          total: pagination.total
+        }}
         rowSelection={{
           type: 'checkbox',
           onChange: handleRowSelected,
@@ -117,9 +185,10 @@ const BasicList: React.FC<Props & StateType> = ({
           },
           {
             title: '适用工序',
-            dataIndex: 'processCategoryDtoList.processName',
-            key: 'processCategoryDtoList.processName',
+            dataIndex: 'processCategoryDtoList',
+            key: 'processCategoryDtoList',
             align: 'center',
+            render: value => value.map(({ processName }: ProcessDto) => processName).join(' ')
           },
           {
             title: '添加时间',
@@ -131,6 +200,188 @@ const BasicList: React.FC<Props & StateType> = ({
         dataSource={list}
         rowKey={({ id }) => id}
       />
+      <Modal
+        visible={createModalVisible}
+        title="新增审核内容"
+        onCancel={handleCreateCancel}
+        footer={null}
+      >
+        <CustomForm
+          name="create"
+          items={[
+            {
+              label: "审核类别",
+              name: 'auditCategoryId',
+              type: 'select',
+              typeOptions: typeList,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择审核类别'
+                }
+              ]
+            },
+            {
+              label: '编号',
+              name: 'no',
+              type: 'input',
+              rules: [
+                {
+                  required: true,
+                  message: '请填写编号'
+                }
+              ]
+            },
+            {
+              label: '审核内容',
+              name: 'auditComment',
+              type: 'input',
+              rules: [
+                {
+                  required: true,
+                  message: '请填写审核内容'
+                }
+              ]
+            },
+            {
+              label: '适用层级',
+              name: 'useLevel',
+              type: 'select',
+              typeOptions: [
+                {
+                  name: 'L1',
+                  value: 'L1',
+                },
+                {
+                  name: 'L2',
+                  value: 'L2',
+                },
+                {
+                  name: 'L3',
+                  value: 'L3',
+                },
+              ],
+              mode: 'multiple',
+              rules: [
+                {
+                  required: true,
+                  message: '请选择适用层级'
+                }
+              ]
+            },
+            {
+              label: '适用工序',
+              name: 'processIds',
+              type: 'select',
+              typeOptions: processList,
+              mode: 'multiple',
+              rules: [
+                {
+                  required: true,
+                  message: '请选择适用工序'
+                }
+              ]
+            }
+          ]}
+          initialValues={{
+          }}
+          onFinish={handleCreateOk}
+        />
+      </Modal>
+      <Modal
+        visible={editModalVisible}
+        title="编辑审核类别"
+        onCancel={handleEditModalCancel}
+        footer={null}
+        destroyOnClose
+      >
+        <CustomForm
+          name="edit"
+          items={[
+            {
+              label: "审核类别",
+              name: 'auditCategoryId',
+              type: 'select',
+              typeOptions: typeList,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择审核类别'
+                }
+              ]
+            },
+            {
+              label: '编号',
+              name: 'no',
+              type: 'input',
+              rules: [
+                {
+                  required: true,
+                  message: '请填写编号'
+                }
+              ]
+            },
+            {
+              label: '审核内容',
+              name: 'auditComment',
+              type: 'input',
+              rules: [
+                {
+                  required: true,
+                  message: '请填写审核内容'
+                }
+              ]
+            },
+            {
+              label: '适用层级',
+              name: 'useLevel',
+              type: 'select',
+              typeOptions: [
+                {
+                  name: 'L1',
+                  value: 'L1',
+                },
+                {
+                  name: 'L2',
+                  value: 'L2',
+                },
+                {
+                  name: 'L3',
+                  value: 'L3',
+                },
+              ],
+              mode: 'multiple',
+              rules: [
+                {
+                  required: true,
+                  message: '请选择适用层级'
+                }
+              ]
+            },
+            {
+              label: '适用工序',
+              name: 'processIds',
+              type: 'select',
+              typeOptions: processList,
+              mode: 'multiple',
+              rules: [
+                {
+                  required: true,
+                  message: '请选择适用工序'
+                }
+              ]
+            }
+          ]}
+          initialValues={{
+            auditCategoryId: selectedRows[0]?.auditCategoryId.toString(),
+            no: selectedRows[0]?.no,
+            auditComment: selectedRows[0]?.auditComment,
+            processIds: selectedRows[0]?.processCategoryDtoList?.map(({id}) => id),
+            useLevel: selectedRows[0]?.useLevel.split(','),
+          }}
+          onFinish={handleEditConfirm}
+        />
+      </Modal>
     </Main>
   );
 };
@@ -142,6 +393,8 @@ export default connect(
       selectLoading,
       list,
       typeList,
+      pagination,
+      processList,
     },
   }: {
     basicList: StateType;
@@ -150,5 +403,7 @@ export default connect(
     selectLoading,
     list,
     typeList,
+    pagination,
+    processList,
   }),
 )(BasicList);

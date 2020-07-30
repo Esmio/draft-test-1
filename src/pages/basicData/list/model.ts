@@ -3,16 +3,23 @@ import { EffectsCommandMap } from 'dva';
 import { 
   fetchFakeData,
   list,
+  create,
+  update,
+  remove,
   getTypeList,
+  getProcess,
 } from './service';
-import { TypeListItem } from './data.d';
+import { TypeListItem, PagiType, ProcessType } from './data.d';
 import { TypeOptions } from '@/components/SearchForm';
+import { message } from 'antd';
 
 export interface StateType {
   loading: boolean;
   selectLoading: boolean;
   typeList: TypeOptions[];
   list: never[];
+  pagination: PagiType;
+  processList: TypeOptions[];
 }
 
 export type Effect = (
@@ -26,7 +33,11 @@ export interface ModelType {
   effects: {
     // fetch: Effect;
     list: Effect;
+    create: Effect,
+    update: Effect,
+    remove: Effect,
     getTypeList: Effect;
+    getProcess: Effect;
     fetchFake: Effect;
   };
   reducers: {
@@ -42,15 +53,72 @@ const Model: ModelType = {
     selectLoading: false,
     list: [],
     typeList: [],
+    pagination: {
+      page: 1,
+      size: 10
+    },
+    processList: [],
   },
 
   effects: {
     *list({ payload }, { call, put }) {
       yield put({ type: 'save', payload: { loading: true }});
       const res = yield call(list, payload);
-      if(res.errCode === 0) 
-        yield put({ type: 'save', payload: { list: res.data.list } });
+      if(res.errCode === 0) {
+        const { list, page, size, total } = res.data;
+        yield put({ 
+          type: 'save',
+          payload: { 
+            list,
+            pagination: {
+              page,
+              size,
+              total,
+            }
+          }
+        })
+      }
+      yield put({ type: 'save', payload: { loading: false }});
+    },
+    *create({ payload, callback }, { call, put }) {
       yield put({ type: 'save', payload: { loading: true }});
+      const res = yield call(create, payload);
+      if(res.errCode === 0) {
+        message.success('创建成功！');
+        yield put({type: 'list', payload: {
+          page: 1,
+          size: 10,
+        }});
+        if(callback) callback();
+      }
+      yield put({ type: 'save', payload: { loading: false }});
+    },
+    *update({ payload, callback }, { call, put }) {
+      yield put({ type: 'save', payload: { loading: true }});
+      const res = yield call(update, payload);
+      if(res.errCode === 0) {
+        message.success('修改成功！')
+        yield put({type: 'list', payload: {
+          page: 1,
+          size: 10,
+        }});
+        if(callback) callback();
+      }
+      yield put({ type: 'save', payload: { loading: false }});
+    },
+    *remove({ payload, callback }, { call, put }) {
+      yield put({ type: 'save', payload: { loading: false }});
+      const res = yield call(remove, payload);
+      if(res.errCode === 0) {
+        message.success('已删除！')
+        yield put({type: 'list', payload: {
+          page: 1,
+          size: 10,
+        }});
+        if(callback) callback();
+      }
+      yield put({ type: 'save', payload: { loading: true }});
+
     },
     *getTypeList(_, { call, put }) {
       yield put({ type: 'save', payload: { selectLoading: true } });
@@ -70,6 +138,22 @@ const Model: ModelType = {
           }
         })
       yield put({ type: 'save', payload: { selectLoading: false } });
+    },
+    *getProcess(_, { call, put }) {
+      const res = yield call(getProcess);
+      if(res.errCode === 0)
+        yield put({
+          type: 'save',
+          payload: {
+            processList: res.data.map(({
+              childId: value,
+              childName: name
+            }: ProcessType) => ({
+              name,
+              value,
+            })) 
+          }
+        });
     },
     // mock 数据
     *fetchFake({ payload }, { call, put }) {

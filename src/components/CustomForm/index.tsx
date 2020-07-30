@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { Form, Input, Select, Button } from 'antd';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
@@ -14,7 +14,9 @@ interface TypeOption {
 
 interface WithTypeItemProps extends FormItemProps {
   type: 'input' | 'select';
-  typeOptions?: TypeOption | any;
+  typeOptions?: TypeOption[];
+  multi?: boolean;
+  mode?: "multiple" | "tags" | undefined;
 } 
 
 interface Props {
@@ -42,18 +44,26 @@ const CustomForm: React.FC<Props> = ({
 }) => {
   const [form] = Form.useForm();
 
+  const handleOnFinish = useCallback(
+    (values) => {
+      onFinish && onFinish(values);
+      form.resetFields();
+    },
+    [onFinish],
+  )
+
   return (
     <Form
       {...layout}
       form={form}
       name={name}
       initialValues={initialValues || {}}
-      onFinish={onFinish}
+      onFinish={handleOnFinish}
       onFinishFailed={onFinishFailed}
     >
-      {items.map(({ type, typeOptions, ...itemProps }, idx) => (
+      {items.map(({ type, typeOptions, mode, ...itemProps }, idx) => (
         <Form.Item {...itemProps} key={idx}>
-          {getComByType(type, typeOptions)}
+          {getComByType({type,typeOptions, mode})}
         </Form.Item>
       ))}
       <Form.Item {...tailLayout}>
@@ -63,12 +73,22 @@ const CustomForm: React.FC<Props> = ({
   )
 }
 
-function getComByType(type: string, typeOptions?: any): ReactNode {
+interface ComPrams {
+  type: string;
+  typeOptions?: TypeOption[];
+  mode?: "multiple" | "tags" | undefined;
+}
+
+function getComByType({
+  type,
+  typeOptions,
+  mode,
+}: ComPrams): ReactNode {
   switch(type) {
     case 'input':
       return <Input className={styles.itemWidth} />
     case 'select':
-      return <Select style={{width: 220}}>
+      return <Select style={{width: 220}} mode={mode}>
         {typeOptions?.map(({ value, name }: TypeOption) => (
           <Option key={value} value={value}>{name}</Option>
         ))}

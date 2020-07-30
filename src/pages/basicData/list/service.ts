@@ -29,7 +29,12 @@ export const getTypeList = async () =>
     method: 'post',
     data: {}
   })
-  
+// 工序列表
+export const getProcess = async () =>
+  request(`/api/base/data/process/select/all`, {
+    method: 'post',
+    data: {}
+  })
 export async function fetchFakeData() {
   return request('/api/fake_truck_detection_data');
 }

@@ -26,12 +26,29 @@ export interface CreateQuery {
   userName: string;
 }
 
+export interface UpdateQuery extends CreateQuery {
+  id: string;
+}
+
+export interface ListItem extends Omit<UpdateQuery, 'processIds'> {
+  processCategoryDtoList: ProcessDto[];
+}
+
 export interface RemoveQuery {
   id: string;
 }
 
-export interface UpdateQuery extends CreateQuery {
+// Process
+export interface ProcessType {
+  childId: string;
+  childName: string;
+  createTime: string;
+}
+// ProcessDto
+export interface ProcessDto {
+  auditCommentId: string;
   id: string;
+  processName: string;
 }
 
 export interface TypeListItem {
