@@ -2,6 +2,7 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { 
   fetchFakeData,
+  list
 } from './service';
 
 import { 
@@ -9,6 +10,7 @@ import {
 
 export interface StateType {
   loading: boolean;
+  list: never[];
 }
 
 export type Effect = (
@@ -20,6 +22,7 @@ export interface ModelType {
   namespace: string;
   state: StateType;
   effects: {
+    list: Effect;
     // fetch: Effect;
     fetchFake: Effect;
   };
@@ -33,19 +36,25 @@ const Model: ModelType = {
 
   state: {
     loading: false,
+    list: [],
   },
 
   effects: {
+    *list({ payload }, { call, put }) {
+      yield put({type: 'save', payload: { loading: true }})
+      const res = yield call(list, payload);
+      if(res.errCode === 0)
+        yield put({type: 'save', payload: { list: res.data }})
+      yield put({type: 'save', payload: { loading: false }})
+    },
     // mock 数据
-    *fetchFake({ payload }, { call, put }) {
+    *fetchFake(_, { call, put }) {
       const data = yield call(fetchFakeData);
       const { 
-        // customerList,
       } = data;
       yield put({
         type: 'save',
         payload: {
-          // customerList,
         },
       });
     },

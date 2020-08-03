@@ -13,3 +13,16 @@ export type PagiType = {
   total?: number
 }
 
+export interface ListQuery {
+  monthOfYear: string;
+}
+
+interface ScoreMap {
+  [key: string]: string;
+}
+
+export interface ListItem {
+  departmentName: string;
+  problemCategoryName: string;
+  scoreMap: ScoreMap
+}
