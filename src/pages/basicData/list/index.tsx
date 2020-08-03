@@ -50,27 +50,27 @@ const BasicList: React.FC<Props & StateType> = ({
     setEditModalVisible(true);
   }, [editModalVisible]);
 
-// 删除提交
-const onRemove = useCallback(() => {
-  Modal.confirm({
-    title: '确定删除吗？',
-    okText: '确定',
-    cancelText: '取消',
-    onOk: () => {
-      dispatch({
-        type: 'basicList/remove',
-        payload: {
-          id: selectedRows[0].id,
-          ...searchRef.current,
-          ...pagination,
-        },
-        callback: () => {
-          setSelectedRows([]);
-        }
-      })
-    }
-  })
-}, [selectedRows])
+  // 删除提交
+  const onRemove = useCallback(() => {
+    Modal.confirm({
+      title: '确定删除吗？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk: () => {
+        dispatch({
+          type: 'basicList/remove',
+          payload: {
+            id: selectedRows[0].id,
+            ...searchRef.current,
+            ...pagination,
+          },
+          callback: () => {
+            setSelectedRows([]);
+          }
+        })
+      }
+    })
+  }, [selectedRows])
 
   const onSearch = useCallback((values) => {
     searchRef.current = values;

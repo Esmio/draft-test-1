@@ -7,10 +7,23 @@ export interface DateRangeQuery {
   [index: string]: string;
 }
 // 分页
-export type PagiType = {
-  pageNum: number;
-  pageSize: number;
+export interface PagiType {
+  page: number;
+  size: number;
   total?: number
+}
+
+// ListItem
+export interface ListItem {
+  createAt: string;
+  departId: string;
+  departName: string;
+  jobLevel: string;
+  processId: string;
+  processName: string;
+  updateAt: string;
+  userId: string;
+  userName: string;
 }
 
 export interface CreateQuery {
@@ -19,4 +32,40 @@ export interface CreateQuery {
   processId: string;
   userId: string;
   userName: string;
+}
+
+export interface UserName {
+  id: string;
+  realName: string;
+}
+
+export interface Department {
+  createTime: string;
+  parentId: string;
+  parentName: string;
+}
+
+// Process
+export interface ProcessType {
+  childId: string;
+  childName: string;
+  createTime: string;
+}
+
+// 主列表
+export interface ListQuery extends PagiType {
+  departmentId?: string;
+  searchUserName?: string;
+}
+// 修改
+export interface UpdateQuery {
+  departId: string;
+  jobLevel: string;
+  processId: string;
+  userId: string;
+  userName: string;
+}
+// 删除
+export interface RemoveQuery {
+  id: string;
 }

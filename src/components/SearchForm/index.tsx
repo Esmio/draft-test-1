@@ -5,7 +5,7 @@ import { FormItemProps } from 'antd/lib/form'
 
 const { Option } = Select;
 
-interface TypeOption {
+export interface TypeOption {
   value: string | number;
   name: string;
 }
@@ -22,6 +22,7 @@ interface Props {
   name?: string;
   onFinish?:Callbacks['onFinish'];
   onFinishFailed?:Callbacks['onFinishFailed'];
+  onReset?: () => void;
 }
 
 const SearchForm: React.FC<Props> = ({
@@ -30,12 +31,14 @@ const SearchForm: React.FC<Props> = ({
   initialValues,
   onFinish,
   onFinishFailed,
+  onReset,
 }) => {
-  
+
   const [form] = Form.useForm();
   const handleReset = useCallback(
     () => {
       form.resetFields();
+      onReset && onReset();
     },
     [],
   )
