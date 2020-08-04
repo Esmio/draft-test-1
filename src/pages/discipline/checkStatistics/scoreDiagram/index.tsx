@@ -32,6 +32,7 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
   }, [])
 
   const handleDateChange = useCallback((date) => {
+    if(!date) return;
     dispatch({
       type: 'scoreDiagram/list',
       payload: {
@@ -114,44 +115,6 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
         loading={loading}
         size="small"
         pagination={false}
-        // columns={[
-        //   {
-        //     title: '区域',
-        //     dataIndex: 'distric',
-        //     key: 'district',
-        //     align: 'center',
-        //   },
-        //   {
-        //     title: '6月第1周',
-        //     dataIndex: 'distric',
-        //     key: 'district',
-        //     align: 'center',
-        //   },
-        //   {
-        //     title: '6月第2周',
-        //     dataIndex: 'distric',
-        //     key: 'district',
-        //     align: 'center',
-        //   },
-        //   {
-        //     title: '6月第3周',
-        //     dataIndex: 'distric',
-        //     key: 'district',
-        //     align: 'center',
-        //   },
-        //   {
-        //     title: '6月第4周',
-        //     dataIndex: 'distric',
-        //     key: 'district',
-        //     align: 'center',
-        //   },
-        //   {
-        //     title: '平均分',
-        //     dataIndex: 'distric',
-        //     key: 'district',
-        //     align: 'center',
-        //   },
-        // ]}
         columns={convertColumnsAndDataSource()['columns']}
         dataSource={convertColumnsAndDataSource()['dataSource']}
         rowKey={({ departmentName }) => departmentName}

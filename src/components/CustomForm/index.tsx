@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback } from 'react';
-import { Form, Input, Select, Button } from 'antd';
+import { Form, Input, Select, Button, DatePicker } from 'antd';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
 
@@ -13,11 +13,12 @@ interface TypeOption {
 }
 
 interface WithTypeItemProps extends FormItemProps {
-  type: 'input' | 'select';
+  type: 'input' | 'select' | 'datepicker';
   typeOptions?: TypeOption[];
   multi?: boolean;
   mode?: "multiple" | "tags" | undefined;
-} 
+  picker?: "date" | "week" | "month" | "quarter" | "year";
+}
 
 interface Props {
   items: WithTypeItemProps[];
@@ -61,9 +62,9 @@ const CustomForm: React.FC<Props> = ({
       onFinish={handleOnFinish}
       onFinishFailed={onFinishFailed}
     >
-      {items.map(({ type, typeOptions, mode, ...itemProps }, idx) => (
+      {items.map(({ type, typeOptions, mode, picker, ...itemProps }, idx) => (
         <Form.Item {...itemProps} key={idx}>
-          {getComByType({type,typeOptions, mode})}
+          {getComByType({type,typeOptions, mode, picker})}
         </Form.Item>
       ))}
       <Form.Item {...tailLayout}>
@@ -77,12 +78,14 @@ interface ComPrams {
   type: string;
   typeOptions?: TypeOption[];
   mode?: "multiple" | "tags" | undefined;
+  picker?: "date" | "week" | "month" | "quarter" | "year";
 }
 
 function getComByType({
   type,
   typeOptions,
   mode,
+  picker,
 }: ComPrams): ReactNode {
   switch(type) {
     case 'input':
@@ -93,6 +96,10 @@ function getComByType({
           <Option key={value} value={value}>{name}</Option>
         ))}
       </Select>
+    case 'datepicker':
+      return <DatePicker
+        picker={picker || 'date'}
+      />
     default:
       return null;
   }

@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
 import { Table } from 'antd';
+import moment from 'moment';
 
 import { StateType } from './model';
+import { ChartItem } from './data.d';
 import Main from '@/components/MainContainer';
 import ExportButton from '@/components/ExportButton';
 import SearchForm from '@/components/SearchForm';
@@ -13,9 +15,33 @@ interface Props {
   dispatch: Dispatch;
 }
 
-const Amount: React.FC<Props & StateType> = ({
+const CheckIssueAmount: React.FC<Props & StateType> = ({
   dispatch,
+  loading,
+  list,
+  departmentList,
+  departmentListLoading,
 }) => {
+
+  const searchRef = useRef<{
+    departmentId?:React.ReactText;
+    monthOfYear?: string;
+  }>()
+  
+  useEffect(() => {
+    dispatch({type: 'checkIssueAmount/departmentList'});
+  }, [])
+
+  useEffect(() => {
+    if(!departmentList || departmentList.length === 0) return;
+    dispatch({
+      type: 'checkIssueAmount/list',
+      payload: {
+        monthOfYear: moment().format('YYYY-MM'),
+        departmentId: departmentList[0]?.value,
+      },
+    });
+  }, [departmentList]);
 
   const onChange = useCallback((e) => {
   }, [])
@@ -23,8 +49,67 @@ const Amount: React.FC<Props & StateType> = ({
   const reset = useCallback(() => {
   }, [])
 
-  const onSearch = useCallback(() => {
+  const onSearch = useCallback((values) => {
+    const { departmentId, monthOfYear } = values;
+    const searchParams = {
+      departmentId,
+      monthOfYear: moment(monthOfYear).format('YYYY-MM')
+    }
+    dispatch({
+      type: 'checkIssueAmount/list',
+      payload: searchParams,
+    });
+    searchRef.current = searchParams;
   }, [])
+
+  const convertColumnsAndDataSource = useCallback(() => {
+    const data: ChartItem[] = [];
+    const columns: any[] = [];
+    const dataSource: {
+      problemCategoryName: string;
+      [key: string]: string;
+    }[] = [];
+
+    list.forEach(({ problemCategoryName, scoreMap }, idx) => {
+      if(idx === 0)
+        columns.push({
+          title: '问题类别',
+          dataIndex: 'problemCategoryName',
+          align: 'center',
+          key: 'problemCategoryName',
+        })
+      const dataItem = {
+        problemCategoryName,
+      }
+      Object.keys(scoreMap).forEach(id => {
+        if(idx === 0)
+          columns.push({
+            title: id === '10' ? '平均值' : `第${id}周`,
+            dataIndex: id,
+            align: 'center',
+            key: id,
+          })
+        dataItem[id] = scoreMap[id];
+        if(id !== '10')
+          data.push({
+            x: id,
+            y: parseFloat(scoreMap[id]),
+            type: problemCategoryName,
+          })
+      })
+      dataSource.push(dataItem);
+    })
+
+    console.log('columns', columns)
+    console.log('dataSource', dataSource)
+    console.log('data', data)
+    
+    return {
+      columns,
+      dataSource,
+      data,
+    }
+  }, [list]);
 
   return (
     <Main
@@ -33,128 +118,45 @@ const Amount: React.FC<Props & StateType> = ({
           items={[
             {
               label: "部门选择",
-              name: 'department',
+              name: 'departmentId',
               type: 'select',
-              typeOptions: [
-                {
-                  name: 'value1',
-                  value: 1,
-                },
-                {
-                  name: 'value2',
-                  value: 2,
-                },
-                {
-                  name: 'value3',
-                  value: 3,
-                },
-                {
-                  name: 'value4',
-                  value: 4,
-                }
-              ],
+              loading: departmentListLoading,
+              typeOptions: departmentList,
             },
             {
               label: "月份选择",
-              name: 'month',
-              type: 'select',
-              typeOptions: [
-                {
-                  name: 'value1',
-                  value: 1,
-                },
-                {
-                  name: 'value2',
-                  value: 2,
-                },
-                {
-                  name: 'value3',
-                  value: 3,
-                },
-                {
-                  name: 'value4',
-                  value: 4,
-                }
-              ],
+              name: 'monthOfYear',
+              type: 'datepicker',
+              picker: 'month',
             }
           ]}
           initialValues={{
-            department: 1,
-            month: 1
+            departmentId: searchRef.current?.departmentId,
+            monthOfYear: searchRef.current?.monthOfYear ? moment(searchRef.current?.monthOfYear) : null,
           }}
           onFinish={onSearch}
         />
       }
       extra={<ExportButton />}
     >
-      <Bar
-        title=""
-        data={[
-          {
-            x: '1',
-            y: 10,
-          },
-          {
-            x: '2',
-            y: 20,
-          },
-          {
-            x: '3',
-            y: 30,
-          },
-          {
-            x: '4',
-            y: 40,
-          },
-          {
-            x: '5',
-            y: 50,
-          }
-        ]}
-      />
+      {
+        convertColumnsAndDataSource()['data'] 
+        && convertColumnsAndDataSource()['data'].length > 0 ?
+        <Bar
+          title=""
+          type="interval"
+          color="type"
+          data={convertColumnsAndDataSource()['data']}
+        /> : null
+      }
       <Table
         bordered
+        loading={loading}
         size="small"
         pagination={false}
-        columns={[
-          {
-            title: '问题类别',
-            dataIndex: 'distric',
-            key: 'district',
-            align: 'center',
-          },
-          {
-            title: '6月第1周',
-            dataIndex: 'distric',
-            key: 'district',
-            align: 'center',
-          },
-          {
-            title: '6月第2周',
-            dataIndex: 'distric',
-            key: 'district',
-            align: 'center',
-          },
-          {
-            title: '6月第3周',
-            dataIndex: 'distric',
-            key: 'district',
-            align: 'center',
-          },
-          {
-            title: '6月第4周',
-            dataIndex: 'distric',
-            key: 'district',
-            align: 'center',
-          },
-          {
-            title: '合计',
-            dataIndex: 'distric',
-            key: 'district',
-            align: 'center',
-          },
-        ]}
-        dataSource={[]}
+        columns={convertColumnsAndDataSource()['columns']}
+        dataSource={convertColumnsAndDataSource()['dataSource']}
+        rowKey={({ problemCategoryName }) => problemCategoryName}
       />
     </Main>
   );
@@ -162,10 +164,18 @@ const Amount: React.FC<Props & StateType> = ({
 
 export default connect(
   ({
-    amount: {
+    checkIssueAmount: {
+      loading,
+      list,
+      departmentList,
+      departmentListLoading,
     },
   }: {
-    amount: StateType;
+    checkIssueAmount: StateType;
   }) => ({
+    loading,
+    list,
+    departmentList,
+    departmentListLoading,
   }),
-)(Amount);
+)(CheckIssueAmount);

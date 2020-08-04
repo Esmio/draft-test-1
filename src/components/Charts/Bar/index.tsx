@@ -7,17 +7,19 @@ import styles from '../index.less';
 
 export interface BarProps {
   title: React.ReactNode;
-  color?: string;
+  color?: string | [string, string[]];
   padding?: [number, number, number, number];
   height?: number;
   data: {
     x: string;
     y: number;
+    type?: string;
   }[];
   forceFit?: boolean;
   autoLabel?: boolean;
   style?: React.CSSProperties;
   type?: GeomType;
+  size?: number;
 }
 
 class Bar extends Component<
@@ -126,7 +128,23 @@ class Bar extends Component<
             />
             <Axis name="y" min={0} />
             <Tooltip showTitle={false} crosshairs={false} />
-            <Geom type={ type || 'interval'} position="x*y" color={color} tooltip={tooltip} />
+            <Geom
+              type={ type || 'interval'}
+              position="x*y"
+              color={color}
+              tooltip={tooltip}
+              adjust={[
+                {
+                  type: "dodge",
+                  dodgeBy: "type",
+                  // 按照 type 字段进行分组
+                  marginRatio: .1 // 分组中各个柱子之间不留空隙
+                },
+                {
+                  type: "stack"
+                }
+              ]}
+            />
           </Chart>
         </div>
       </div>

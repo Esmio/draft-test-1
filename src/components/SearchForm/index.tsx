@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useEffect } from 'react';
-import { Form, Input, Select, Button } from 'antd';
+import { Form, Input, Select, Button, DatePicker } from 'antd';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
 
@@ -11,17 +11,18 @@ export interface TypeOption {
 }
 
 interface WithTypeItemProps extends FormItemProps {
-  type: 'input' | 'select';
+  type: 'input' | 'select' | 'datepicker';
   typeOptions?: TypeOption | any;
   loading?: boolean;
-} 
+  picker?: "date" | "week" | "month" | "quarter" | "year";
+}
 
 interface Props {
   items: WithTypeItemProps[];
   initialValues?: Store;
   name?: string;
-  onFinish?:Callbacks['onFinish'];
-  onFinishFailed?:Callbacks['onFinishFailed'];
+  onFinish?: Callbacks['onFinish'];
+  onFinishFailed?: Callbacks['onFinishFailed'];
   onReset?: () => void;
 }
 
@@ -57,9 +58,9 @@ const SearchForm: React.FC<Props> = ({
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      {items.map(({ type, typeOptions, loading, ...itemProps }, idx) => (
+      {items.map(({ type, typeOptions, loading, picker, ...itemProps }, idx) => (
         <Form.Item {...itemProps} key={idx}>
-          {getComByType({type, typeOptions, loading})}
+          {getComByType({type, typeOptions, loading, picker})}
         </Form.Item>
       ))}
       <Form.Item>
@@ -81,9 +82,10 @@ interface TypeParams {
   type: string;
   typeOptions: TypeOptions[];
   loading?: boolean;
+  picker?: "date" | "week" | "month" | "quarter" | "year";
 }
 
-function getComByType({type, typeOptions, loading}: TypeParams): ReactNode {
+function getComByType({type, typeOptions, loading, picker}: TypeParams): ReactNode {
   switch(type) {
     case 'input':
       return <Input />
@@ -93,6 +95,10 @@ function getComByType({type, typeOptions, loading}: TypeParams): ReactNode {
           <Option key={value} value={value}>{name}</Option>
         ))}
       </Select>
+    case 'datepicker':
+      return <DatePicker
+        picker={picker || 'date'}
+      />
     default:
       return null;
   }

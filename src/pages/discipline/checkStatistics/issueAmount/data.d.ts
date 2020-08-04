@@ -13,3 +13,21 @@ export type PagiType = {
   total?: number
 }
 
+// ListQuery
+export interface ListQuery {
+  departmentId: string;
+  monthOfYear: string;
+}
+
+// Department
+export interface Department {
+  createTime: string;
+  parentId: string;
+  parentName: string;
+}
+// ChartItem
+export interface ChartItem {
+  x: string;
+  y: number;
+  type?: string;
+}
