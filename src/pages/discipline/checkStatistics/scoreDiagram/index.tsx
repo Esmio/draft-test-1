@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
 import { Table, DatePicker } from 'antd';
 
 import { StateType } from './model';
-import { ListItem } from './data.d';
+import { ChartItem } from './data.d';
 import Main from '@/components/MainContainer';
 import ExportButton from '@/components/ExportButton';
 import { Bar } from '@/components/Charts';
 import moment, { Moment } from 'moment';
-import { ColumnType } from 'antd/lib/list';
 
 interface Props {
   dispatch: Dispatch;
@@ -23,9 +22,6 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
 
   const [date, setDate] = useState<Moment>(moment(new Date()))
 
-  console.log('loading', loading);
-  console.log('list', list);
-
   useEffect(() => {
     dispatch({
       type: 'scoreDiagram/list',
@@ -33,12 +29,6 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
         monthOfYear: moment(date).format('YYYY-MM')
       }
     });
-  }, [])
-
-  const onChange = useCallback((e) => {
-  }, [])
-
-  const reset = useCallback(() => {
   }, [])
 
   const handleDateChange = useCallback((date) => {
@@ -52,8 +42,7 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
   }, [date])
 
   const convertColumnsAndDataSource = useCallback(() => {
-    console.log('list--', list);
-
+    const data: ChartItem[] = [];
     const columns: any[] = [];
     const dataSource: {
       departmentName: string;
@@ -62,8 +51,9 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
 
     list.forEach(({ departmentName, scoreMap }) => {
       columns.push({
-        title: departmentName,
+        title: '区域',
         dataIndex: 'departmentName',
+        align: 'center',
         key: 'departmentName',
       })
       const dataItem = {
@@ -73,9 +63,15 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
         columns.push({
           title: id === '10' ? '平均值' : `第${id}周`,
           dataIndex: id,
+          align: 'center',
           key: id,
         })
-        dataItem[id] = scoreMap[id]
+        dataItem[id] = scoreMap[id];
+        if(id !== '10')
+          data.push({
+            x: id,
+            y: parseFloat(scoreMap[id]),
+          })
       })
       dataSource.push(dataItem);
     })
@@ -83,6 +79,7 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
     return {
       columns,
       dataSource,
+      data,
     }
   }, [list])
 
@@ -103,31 +100,15 @@ const ScoreDiagram: React.FC<Props & StateType> = ({
         </>
       }
     >
-      <Bar
-        title=""
-        data={[
-          {
-            x: '1',
-            y: 10,
-          },
-          {
-            x: '2',
-            y: 20,
-          },
-          {
-            x: '3',
-            y: 30,
-          },
-          {
-            x: '4',
-            y: 40,
-          },
-          {
-            x: '5',
-            y: 50,
-          }
-        ]}
-      />
+      {
+        convertColumnsAndDataSource()['data'] 
+        && convertColumnsAndDataSource()['data'].length > 0 ? 
+          <Bar
+            title=""
+            data={convertColumnsAndDataSource()['data']}
+          />
+          : null
+      }
       <Table
         bordered
         loading={loading}

@@ -6,6 +6,10 @@ export interface DateRangeQuery {
   endDate: string;
   [index: string]: string;
 }
+export interface ChartItem {
+  x: string;
+  y: number;
+}
 // 分页
 export type PagiType = {
   pageNum: number;
