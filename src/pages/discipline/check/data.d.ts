@@ -13,7 +13,7 @@ export type PagiType = {
   total?: number
 }
 
-interface Juror {
+export interface Juror {
   processId: number;
   userId: string;
   userName: string;

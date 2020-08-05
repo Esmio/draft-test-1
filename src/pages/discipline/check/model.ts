@@ -71,10 +71,18 @@ const Model: ModelType = {
       yield put({ type: 'save', payload: { loading: true } })
       const res = yield call(list, payload);
       if(res.errCode === 0) {
+        const { list, page, size, total } = res.data;
         yield put({
           type: 'save',
-          list: res.data.list,
-        })
+          payload: {
+            list,
+            pagination: {
+              page,
+              size,
+              total,
+            }
+          }
+        });
       }
       yield put({ type: 'save', payload: { loading: false } })
     },

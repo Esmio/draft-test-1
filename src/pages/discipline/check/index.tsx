@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback, ReactText } from 'react';
+import React, { useState, useEffect, useCallback, ReactText, useRef } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
 import { Table } from 'antd';
 
 import { StateType } from './model';
+import { Juror } from './data.d';
 import Main from '@/components/MainContainer';
 import ControlBar from '@/components/ControlBar';
 
@@ -13,18 +14,25 @@ interface Props {
 
 const Check: React.FC<Props & StateType> = ({
   dispatch,
+  loading,
+  list,
+  pagination,
 }) => {
 
-  const [status, setStatus] = useState('1');
+  const [status, setStatus] = useState('discipline_start');
+
+  const searchRef = useRef<{ departmentId?: string; searchUserName?: string; }>({})
 
   // didMount
   useEffect(() => {
+    const auditFail: boolean = status === 'discipline_submit_fail';
     dispatch({
       type: 'check/list',
       payload: {
         page: 1,
         size: 10,
         status,
+        auditFail,
       }
     })
   }, []);
@@ -53,6 +61,21 @@ const Check: React.FC<Props & StateType> = ({
       console.log('selectedRowKeys', selectedRowKeys)
       console.log('selectedRows', selectedRows)
     }
+
+  // 分页
+  const handlePageChange = useCallback(
+    (page, size) => {
+      dispatch({
+        type: 'check/list',
+        payload: {
+          page,
+          size,
+          ...searchRef.current,
+        }
+      })
+    },
+    [],
+  )
 
   return (
     <Main
@@ -91,8 +114,14 @@ const Check: React.FC<Props & StateType> = ({
     >
       <Table
         bordered
+        loading={loading}
         size="small"
-        pagination={false}
+        pagination={{
+          current: pagination.page,
+          pageSize: pagination.size,
+          total: pagination.total,
+          onChange: handlePageChange
+        }}
         rowSelection={{
           type: 'checkbox',
           onChange: handleRowSelected,
@@ -100,67 +129,69 @@ const Check: React.FC<Props & StateType> = ({
         columns={[
           {
             title: '问题类别',
-            dataIndex: 'issueType',
+            dataIndex: 'categoryName',
             align: 'center',
-            key: 'issueType',
+            key: 'categoryName',
           },
           {
             title: '问题描述',
-            dataIndex: 'issueType',
+            dataIndex: 'problemDesc',
             align: 'center',
-            key: 'issueType',
+            key: 'problemDesc',
           },
           {
             title: '问题图片',
-            dataIndex: 'issueType',
+            dataIndex: 'imageUrl',
             align: 'center',
-            key: 'issueType',
+            key: 'imageUrl',
+            render: url => (<img width="100px" src={url} />)
           },
           {
             title: '问题严重程度',
-            dataIndex: 'issueType',
+            dataIndex: 'severityName',
             align: 'center',
-            key: 'issueType',
+            key: 'severityName',
           },
           {
             title: '扣分',
-            dataIndex: 'issueType',
+            dataIndex: 'fraction',
             align: 'center',
-            key: 'issueType',
+            key: 'fraction',
           },
           {
             title: '负责人',
-            dataIndex: 'issueType',
+            dataIndex: 'responsibleName',
             align: 'center',
-            key: 'issueType',
+            key: 'responsibleName',
           },
           {
             title: '区域',
-            dataIndex: 'issueType',
+            dataIndex: 'departmentName',
             align: 'center',
-            key: 'issueType',
+            key: 'departmentName',
           },
           {
             title: '检查时间',
-            dataIndex: 'issueType',
+            dataIndex: 'planDate',
             align: 'center',
-            key: 'issueType',
+            key: 'planDate',
           },
           {
             title: '检查人员',
-            dataIndex: 'issueType',
+            dataIndex: 'qualityUserName',
             align: 'center',
-            key: 'issueType',
+            key: 'qualityUserName',
           },
           {
             title: '陪审员',
-            dataIndex: 'issueType',
+            dataIndex: 'processProblemUserDtoList',
             align: 'center',
-            key: 'issueType',
+            key: 'processProblemUserDtoList',
+            render: arr => arr.map(({ userName }: Juror) => userName).join('，')
           },
         ]}
-        dataSource={[]}
-        rowKey={({ processId }) => processId}
+        dataSource={list}
+        rowKey={({ id }) => id}
       />
     </Main>
   );
@@ -170,10 +201,14 @@ export default connect(
   ({
     check: {
       loading,
+      list,
+      pagination,
     },
   }: {
     check: StateType;
   }) => ({
     loading,
+    list,
+    pagination,
   }),
 )(Check);
