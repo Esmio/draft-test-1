@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, ReactText, useRef } from 'reac
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
 import { Table, Modal } from 'antd';
+import moment from 'moment';
 
 import { StateType } from './model';
 import { Juror, ListItem } from './data.d';
@@ -72,9 +73,13 @@ const Check: React.FC<Props & StateType> = ({
 
   // 创建弹框提交
   const handleCreateOk = useCallback((values) => {
+    console.log('create-values', values);
+    const { images, ...params } = values;
+    const imageUrl = images && images[0]?.response.data.url;
+
     dispatch({
       type: 'check/create',
-      payload: values,
+      payload: {...params, imageUrl},
       callback: () => {
         setCreateModalVisible(false);
       }
@@ -238,20 +243,61 @@ const Check: React.FC<Props & StateType> = ({
               type: 'readonly',
             },
             {
+              label: "区域",
+              name: 'departmentName',
+              type: 'readonly',
+            },
+            {
+              label: "检查人员",
+              name: 'qualityUserName',
+              type: 'readonly',
+            },
+            {
+              label: "陪审员",
+              name: 'processProblemUserDtoList',
+              type: 'select',
+              typeOptions: [],
+            },
+            {
               label: "问题类别",
               name: 'categoryName',
-              type: 'input',
-              rules: [
-                {
-                  required: true,
-                  message: '请填写问题类别'
+              type: 'select',
+              typeOptions: [],
+            },
+            {
+              label: "问题图片",
+              name: 'images',
+              type: 'uploader',
+              valuePropName: 'fileList',
+              getValueFromEvent: e => {
+                console.log('Upload event:', e);
+                if (Array.isArray(e)) {
+                  return e;
                 }
-              ]
+                return e && e.fileList;
+              }
+            },
+            {
+              label: "问题描述",
+              name: 'problemDesc',
+              type: 'textarea',
+            },
+            {
+              label: "问题严重度",
+              name: 'severityName',
+              type: 'select',
+              typeOptions: [],
             },
           ]}
           initialValues={{
-            planDate: '',
+            planDate: moment().format('YYYY-MM'),
+            departmentName: '',
+            qualityUserName: '',
+            processProblemUserDtoList: '',
             categoryName: '',
+            imageUrl: '',
+            problemDesc: '',
+            severityName: '',
           }}
           onFinish={handleCreateOk}
         />

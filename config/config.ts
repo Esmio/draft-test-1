@@ -304,5 +304,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },
+    '/uapi/': {
+      target: 'http://192.168.0.122:8700/yp_gate/ypkq',
+      changeOrigin: true,
+      pathRewrite: { '^/uapi': '' },
+    }
   },
 } as IConfig;

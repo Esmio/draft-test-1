@@ -58,14 +58,14 @@ const Model: ModelType = {
     *create({ payload }, { call, put }) {
       const preCreateRes = yield call(preCreate, payload);
       console.log('preCreateRes', preCreateRes);
-      if(preCreateRes.errCode === 0 && !!preCreateRes.data) {
-        const { pagination, ...rest } = payload
-        const res = yield call(create, rest);
-        if(res.errCode === 0) {
-          message.success('创建成功！');
-          yield put({type: 'list', payload: { ...pagination }})
-        }
-      }
+      // if(preCreateRes.errCode === 0 && !!preCreateRes.data) {
+      //   const { pagination, ...rest } = payload
+      //   const res = yield call(create, rest);
+      //   if(res.errCode === 0) {
+      //     message.success('创建成功！');
+      //     yield put({type: 'list', payload: { ...pagination }})
+      //   }
+      // }
     },
     *list({ payload }, { call, put }) {
       yield put({ type: 'save', payload: { loading: true } })

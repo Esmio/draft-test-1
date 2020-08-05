@@ -1,12 +1,13 @@
 import React, { ReactNode, useCallback } from 'react';
-import { Form, Input, Select, Button, DatePicker } from 'antd';
+import { Form, Input, Select, Button, DatePicker, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
 
 import styles from './index.less';
-import { any } from 'prop-types';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 interface TypeOption {
   value: string | number;
@@ -14,7 +15,7 @@ interface TypeOption {
 }
 
 interface WithTypeItemProps extends FormItemProps {
-  type: 'input' | 'select' | 'datepicker' | 'readonly';
+  type: 'input' | 'select' | 'datepicker' | 'readonly' | 'textarea' | 'uploader';
   typeOptions?: TypeOption[];
   multi?: boolean;
   mode?: "multiple" | "tags" | undefined;
@@ -92,7 +93,7 @@ function getComByType({
     case 'input':
       return <Input className={styles.itemWidth} />
     case 'select':
-      return <Select style={{width: 220}} mode={mode}>
+      return <Select style={{width: 260}} mode={mode}>
         {typeOptions?.map(({ value, name }: TypeOption) => (
           <Option key={value} value={value}>{name}</Option>
         ))}
@@ -103,6 +104,22 @@ function getComByType({
       />
     case 'readonly':
       return <PlanText />
+    case 'textarea': 
+      return <TextArea className={styles.itemWidth} />
+    case 'uploader':
+      return <Upload
+        name="file"
+        action="/uapi/attachment/upload"
+        listType="picture"
+        multiple
+        headers={{
+          Authorization: localStorage.getItem('token') || ''
+        }}
+      >
+        <Button >
+          <UploadOutlined /> 上传
+        </Button>
+      </Upload>
     default:
       return null;
   }
