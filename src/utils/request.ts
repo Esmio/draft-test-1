@@ -45,7 +45,7 @@ const errorHandler = (error: { response: Response }): Response => {
   return response;
 };
 
-const token = localStorage.getItem('token');
+const token = localStorage.getItem('token') || localStorage.getItem('TOKEN');
 
 /**
  * 配置request请求时的默认参数
