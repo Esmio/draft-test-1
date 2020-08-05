@@ -14,7 +14,20 @@ interface Props {
 const Check: React.FC<Props & StateType> = ({
   dispatch,
 }) => {
-  const [key, setKey] = useState('1');
+
+  const [status, setStatus] = useState('1');
+
+  // didMount
+  useEffect(() => {
+    dispatch({
+      type: 'check/list',
+      payload: {
+        page: 1,
+        size: 10,
+        status,
+      }
+    })
+  }, []);
 
   const onCreate = useCallback(() => {
 
@@ -28,7 +41,7 @@ const Check: React.FC<Props & StateType> = ({
 
   const handleTabChange = useCallback(
     (key) => {
-      setKey(key);
+      setStatus(key);
     },
     [],
   )
@@ -50,27 +63,27 @@ const Check: React.FC<Props & StateType> = ({
       />}
       tabList={[
         {
-          key: '1',
+          key: 'discipline_start',
           tab: '待提交'
         },
         {
-          key: '2',
+          key: 'discipline_submit',
           tab: '待审核'
         },
         {
-          key: '3',
+          key: 'discipline_submit_fail',
           tab: '未通过'
         },
         {
-          key: '4',
+          key: 'discipline_approve',
           tab: '待处理'
         },
         {
-          key: '5',
+          key: 'discipline_deal',
           tab: '待验证'
         },
         {
-          key: '6',
+          key: 'discipline_finished',
           tab: '已完成'
         },
       ]}
@@ -156,9 +169,11 @@ const Check: React.FC<Props & StateType> = ({
 export default connect(
   ({
     check: {
+      loading,
     },
   }: {
     check: StateType;
   }) => ({
+    loading,
   }),
 )(Check);
