@@ -41,12 +41,14 @@ const Check: React.FC<Props & StateType> = ({
     })
   }, []);
 
+  // 增
   const onCreate = useCallback(() => {
-
-  }, [])
-
+    setCreateModalVisible(true);
+  }, [createModalVisible]);
+  // 改
   const onEdit = useCallback(() => {
-  }, [])
+    setEditModalVisible(true);
+  }, [editModalVisible]);
 
   const onRemove = useCallback(() => {
   }, [])
@@ -67,7 +69,7 @@ const Check: React.FC<Props & StateType> = ({
     },
     [],
   )
-  
+
   // 创建弹框提交
   const handleCreateOk = useCallback((values) => {
     dispatch({
@@ -84,8 +86,8 @@ const Check: React.FC<Props & StateType> = ({
   }, [createModalVisible])
 
   // select rows
-  const handleRowSelected: 
-    ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
+  const handleRowSelected:
+    ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined =
     (_, selectedRows) => {
       setSelectedRows(selectedRows);
     }
@@ -230,8 +232,26 @@ const Check: React.FC<Props & StateType> = ({
         <CustomForm
           name="create"
           items={[
+            {
+              label: "时间",
+              name: 'planDate',
+              type: 'readonly',
+            },
+            {
+              label: "问题类别",
+              name: 'categoryName',
+              type: 'input',
+              rules: [
+                {
+                  required: true,
+                  message: '请填写问题类别'
+                }
+              ]
+            },
           ]}
           initialValues={{
+            planDate: '',
+            categoryName: '',
           }}
           onFinish={handleCreateOk}
         />

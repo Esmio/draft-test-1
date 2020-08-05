@@ -4,6 +4,7 @@ import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
 
 import styles from './index.less';
+import { any } from 'prop-types';
 
 const { Option } = Select;
 
@@ -13,7 +14,7 @@ interface TypeOption {
 }
 
 interface WithTypeItemProps extends FormItemProps {
-  type: 'input' | 'select' | 'datepicker';
+  type: 'input' | 'select' | 'datepicker' | 'readonly';
   typeOptions?: TypeOption[];
   multi?: boolean;
   mode?: "multiple" | "tags" | undefined;
@@ -100,9 +101,20 @@ function getComByType({
       return <DatePicker
         picker={picker || 'date'}
       />
+    case 'readonly':
+      return <PlanText />
     default:
       return null;
   }
+}
+
+interface CustomItemType{
+  value?: string | number;
+  onChange?: () => void;
+}
+
+const PlanText: React.FC<CustomItemType> = ({ value }) => {
+  return <span className="ant-form-text">{value}</span>
 }
 
 export default CustomForm;
