@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, ReactText, useRef } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
 
 import { StateType } from './model';
-import { Juror } from './data.d';
+import { Juror, ListItem } from './data.d';
 import Main from '@/components/MainContainer';
 import ControlBar from '@/components/ControlBar';
+import CustomForm from '@/components/CustomForm';
 
 interface Props {
   dispatch: Dispatch;
@@ -19,6 +20,9 @@ const Check: React.FC<Props & StateType> = ({
   pagination,
 }) => {
 
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<ListItem[]>([]);
   const [status, setStatus] = useState('discipline_start');
 
   const searchRef = useRef<{ departmentId?: string; searchUserName?: string; }>({})
@@ -48,18 +52,42 @@ const Check: React.FC<Props & StateType> = ({
   }, [])
 
   const handleTabChange = useCallback(
-    (key) => {
-      setStatus(key);
+    (status) => {
+      const auditFail: boolean = status === 'discipline_submit_fail';
+      dispatch({
+        type: 'check/list',
+        payload: {
+          page: 1,
+          size: 10,
+          status,
+          auditFail,
+        }
+      })
+      setStatus(status);
     },
     [],
   )
+  
+  // 创建弹框提交
+  const handleCreateOk = useCallback((values) => {
+    dispatch({
+      type: 'check/create',
+      payload: values,
+      callback: () => {
+        setCreateModalVisible(false);
+      }
+    })
+  }, [])
+
+  const handleCreateCancel = useCallback(() => {
+    setCreateModalVisible(false);
+  }, [createModalVisible])
 
   // select rows
   const handleRowSelected: 
     ((selectedRowKeys: ReactText[], selectedRows: never[]) => void) | undefined = 
-    (selectedRowKeys, selectedRows) => {
-      console.log('selectedRowKeys', selectedRowKeys)
-      console.log('selectedRows', selectedRows)
+    (_, selectedRows) => {
+      setSelectedRows(selectedRows);
     }
 
   // 分页
@@ -193,6 +221,21 @@ const Check: React.FC<Props & StateType> = ({
         dataSource={list}
         rowKey={({ id }) => id}
       />
+      <Modal
+        visible={createModalVisible}
+        title="新建工艺纪律检查"
+        onCancel={handleCreateCancel}
+        footer={null}
+      >
+        <CustomForm
+          name="create"
+          items={[
+          ]}
+          initialValues={{
+          }}
+          onFinish={handleCreateOk}
+        />
+      </Modal>
     </Main>
   );
 };

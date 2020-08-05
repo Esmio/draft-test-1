@@ -201,8 +201,8 @@ const StaffLevel: React.FC<Props & StateType> = ({
         columns={[
           {
             title: '姓名',
-            dataIndex: 'userName',
-            key: 'userName',
+            dataIndex: 'realName',
+            key: 'realName',
             align: 'center',
           },
           // {
@@ -264,31 +264,6 @@ const StaffLevel: React.FC<Props & StateType> = ({
                 }
               ]
             },
-            // {
-            //   label: '职位',
-            //   name: 'jobLevel',
-            //   type: 'select',
-            //   typeOptions: [
-            //     {
-            //       name: 'L1',
-            //       value: 'L1',
-            //     },
-            //     {
-            //       name: 'L2',
-            //       value: 'L2',
-            //     },
-            //     {
-            //       name: 'L3',
-            //       value: 'L3',
-            //     },
-            //   ],
-            //   rules: [
-            //     {
-            //       required: true,
-            //       message: '请选择职位'
-            //     }
-            //   ]
-            // },
             {
               label: '所属部门/车间',
               name: 'departmentId',
@@ -335,31 +310,6 @@ const StaffLevel: React.FC<Props & StateType> = ({
         <CustomForm
           name="edit"
           items={[
-            // {
-            //   label: '职位',
-            //   name: 'jobLevel',
-            //   type: 'select',
-            //   typeOptions: [
-            //     {
-            //       name: 'L1',
-            //       value: 'L1',
-            //     },
-            //     {
-            //       name: 'L2',
-            //       value: 'L2',
-            //     },
-            //     {
-            //       name: 'L3',
-            //       value: 'L3',
-            //     },
-            //   ],
-            //   rules: [
-            //     {
-            //       required: true,
-            //       message: '请选择职位'
-            //     }
-            //   ]
-            // },
             {
               label: '所属部门/车间',
               name: 'departId',

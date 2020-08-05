@@ -23,7 +23,7 @@ export interface ListItem {
   processName: string;
   updateAt: string;
   userId: string;
-  userName: string;
+  realName: string;
 }
 
 export interface CreateQuery {
@@ -31,7 +31,7 @@ export interface CreateQuery {
   jobLevel: string;
   processId: string;
   userId: string;
-  userName: string;
+  realName: string;
 }
 
 export interface UserName {
@@ -63,7 +63,7 @@ export interface UpdateQuery {
   jobLevel: string;
   processId: string;
   userId: string;
-  userName: string;
+  realName: string;
 }
 // 删除
 export interface RemoveQuery {

@@ -60,3 +60,7 @@ export interface UpdateQuery extends CreateQuery {
 export interface RemoveQuery {
   processProblemId: string[];
 }
+
+export interface ListItem extends CreateQuery {
+  id: number;
+}
