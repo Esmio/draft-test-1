@@ -19,6 +19,9 @@ const Check: React.FC<Props & StateType> = ({
   loading,
   list,
   pagination,
+  preCreateObj,
+  userList,
+  preCreateLoading,
 }) => {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -40,11 +43,17 @@ const Check: React.FC<Props & StateType> = ({
         auditFail,
       }
     })
+    dispatch({type: 'check/userList'});
   }, []);
 
   // 增
   const onCreate = useCallback(() => {
-    setCreateModalVisible(true);
+    dispatch({
+      type: 'check/preCreate',
+      callback: () => {
+        setCreateModalVisible(true);
+      }
+    })
   }, [createModalVisible]);
   // 改
   const onEdit = useCallback(() => {
@@ -73,6 +82,7 @@ const Check: React.FC<Props & StateType> = ({
 
   // 创建弹框提交
   const handleCreateOk = useCallback((values) => {
+    delete values.produceAndQuality;
     console.log('create-values', values);
     const { images, ...params } = values;
     const imageUrl = images && images[0]?.response.data.url;
@@ -115,6 +125,10 @@ const Check: React.FC<Props & StateType> = ({
   return (
     <Main
       control={<ControlBar
+        createLoading={preCreateLoading}
+        canEdit={selectedRows.length === 1}
+        // canDelete={selectedRows.length > 0}
+        canDelete={selectedRows.length === 1}
         onCreate={onCreate}
         onEdit={onEdit}
         onRemove={onRemove}
@@ -249,20 +263,33 @@ const Check: React.FC<Props & StateType> = ({
             },
             {
               label: "检查人员",
-              name: 'qualityUserName',
+              name: 'produceAndQuality',
               type: 'readonly',
             },
             {
               label: "陪审员",
               name: 'processProblemUserDtoList',
               type: 'select',
-              typeOptions: [],
+              mode: 'multiple',
+              typeOptions: userList,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择陪审员'
+                }
+              ]
             },
             {
               label: "问题类别",
               name: 'categoryName',
               type: 'select',
               typeOptions: [],
+              rules: [
+                {
+                  required: true,
+                  message: '请选择问题类别'
+                }
+              ]
             },
             {
               label: "问题图片",
@@ -270,12 +297,17 @@ const Check: React.FC<Props & StateType> = ({
               type: 'uploader',
               valuePropName: 'fileList',
               getValueFromEvent: e => {
-                console.log('Upload event:', e);
                 if (Array.isArray(e)) {
                   return e;
                 }
                 return e && e.fileList;
-              }
+              },
+              rules: [
+                {
+                  required: true,
+                  message: '请上传图片'
+                }
+              ]
             },
             {
               label: "问题描述",
@@ -287,13 +319,29 @@ const Check: React.FC<Props & StateType> = ({
               name: 'severityName',
               type: 'select',
               typeOptions: [],
+              rules: [
+                {
+                  required: true,
+                  message: '请选择问题严重度'
+                }
+              ]
             },
           ]}
           initialValues={{
-            planDate: moment().format('YYYY-MM'),
-            departmentName: '',
-            qualityUserName: '',
-            processProblemUserDtoList: '',
+            // planDate: moment().format('YYYY-MM'),
+            //preCreateObj
+            departmentId: preCreateObj?.departmentId,
+            departmentName: preCreateObj?.departmentName,
+            planDate: preCreateObj?.planDate,
+            produceUserId: preCreateObj?.produceUserId,
+            produceUserName: preCreateObj?.produceUserName,
+            qualityUserId: preCreateObj?.qualityUserId,
+            qualityUserName: preCreateObj?.qualityUserName,
+            produceAndQuality: `${preCreateObj?.produceUserName}，${preCreateObj?.qualityUserName}`,
+            //pre
+            // departmentName: '',
+            // qualityUserName: '',
+            processProblemUserDtoList: [],
             categoryName: '',
             imageUrl: '',
             problemDesc: '',
@@ -312,6 +360,9 @@ export default connect(
       loading,
       list,
       pagination,
+      preCreateObj,
+      userList,
+      preCreateLoading,
     },
   }: {
     check: StateType;
@@ -319,5 +370,8 @@ export default connect(
     loading,
     list,
     pagination,
+    preCreateObj,
+    userList,
+    preCreateLoading,
   }),
 )(Check);

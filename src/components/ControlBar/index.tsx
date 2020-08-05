@@ -10,6 +10,7 @@ interface Props {
   onCreate: () => void;
   onEdit: () => void;
   onRemove: () => void;
+  createLoading?: boolean;
 }
 
 const ControlBar: React.FC<Props> = ({
@@ -18,9 +19,11 @@ const ControlBar: React.FC<Props> = ({
   onCreate,
   onEdit,
   onRemove,
+  createLoading,
 }) => (
   <>
     <Button
+      loading={createLoading}
       type="primary"
       icon={<PlusOutlined />}
       onClick={() => {

@@ -64,3 +64,19 @@ export interface RemoveQuery {
 export interface ListItem extends CreateQuery {
   id: number;
 }
+
+export interface PreCreateItem {
+  departmentId: string;
+  departmentName: string;
+  id: number;
+  planDate: string;
+  produceUserId: string;
+  produceUserName: string;
+  qualityUserId: string;
+  qualityUserName: string;
+}
+// 陪审员
+export interface UserItem {
+  id: string;
+  realName: string;
+}

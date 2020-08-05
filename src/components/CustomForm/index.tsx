@@ -9,7 +9,7 @@ import styles from './index.less';
 const { Option } = Select;
 const { TextArea } = Input;
 
-interface TypeOption {
+export interface TypeOption {
   value: string | number;
   name: string;
 }
