@@ -338,6 +338,11 @@ const Check: React.FC<Props & StateType> = ({
             type="primary"
             onClick={handleDealModalClicked}
           >处理</Button>}
+          {status === 'discipline_deal' && <Button
+            disabled={selectedRows.length !== 1}
+            type="primary"
+            onClick={handleAuthClicked.bind(null, '验证', 3, 2)}
+          >审核</Button>}
         </>
       }
     >
