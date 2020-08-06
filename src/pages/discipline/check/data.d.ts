@@ -61,8 +61,11 @@ export interface RemoveQuery {
   processProblemId: string[];
 }
 
-export interface ListItem extends CreateQuery {
+export interface ListItem extends Partial<CreateQuery> {
   id: number;
+  planDate: string;
+  processProblemUserDtoList: Juror[];
+  categoryId: number;
 }
 
 export interface PreCreateItem {
@@ -79,4 +82,17 @@ export interface PreCreateItem {
 export interface UserItem {
   id: string;
   realName: string;
+}
+// 问题严重度
+export interface SeverityListItem {
+  createTime: string;
+  fraction: string;
+  id: string;
+  name: string;
+}
+// 问题类别
+export interface IssueTypeListItem {
+  createTime: string;
+  parentId: string;
+  parentName: string;
 }

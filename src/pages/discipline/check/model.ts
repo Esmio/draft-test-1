@@ -7,6 +7,8 @@ import {
   update,
   remove,
   userList,
+  categoryList,
+  severityList,
   fetchFakeData,
 } from './service';
 
@@ -14,6 +16,8 @@ import {
   PagiType,
   PreCreateItem,
   UserItem,
+  SeverityListItem,
+  IssueTypeListItem,
 } from './data.d';
 import { TypeOption } from '@/components/CustomForm';
 import { message } from 'antd';
@@ -25,6 +29,8 @@ export interface StateType {
   preCreateObj: PreCreateItem | null;
   preCreateLoading: boolean;
   userList: TypeOption[];
+  categoryList: TypeOption[];
+  severityList: TypeOption[];
 }
 
 export type Effect = (
@@ -42,6 +48,8 @@ export interface ModelType {
     update: Effect;
     remove: Effect;
     userList: Effect;
+    categoryList: Effect,
+    severityList: Effect,
     // fetch: Effect;
     fetchFake: Effect;
   };
@@ -64,6 +72,8 @@ const Model: ModelType = {
     preCreateObj: null,
     preCreateLoading: false,
     userList: [],
+    categoryList: [],
+    severityList: [],
   },
 
   effects: {
@@ -71,7 +81,7 @@ const Model: ModelType = {
       yield put({type: 'save', payload: {preCreateLoading: true}});
       const preCreateRes = yield call(preCreate, payload);
       console.log('preCreateRes', preCreateRes);
-      if (preCreateRes.errCode === 0 && !!preCreateRes.data) {
+      if (preCreateRes.errCode === 0 && !!preCreateRes.data && JSON.stringify(preCreateRes.data) !== '{}') {
         yield put({
           type: 'save',
           payload: {
@@ -84,12 +94,13 @@ const Model: ModelType = {
       }
       yield put({type: 'save', payload: {preCreateLoading: false}});
     },
-    *create({ payload }, { call, put }) {
+    *create({ payload, callback, listQuery }, { call, put }) {
       const { pagination, ...rest } = payload;
       const res = yield call(create, rest);
       if (res.errCode === 0) {
         message.success('创建成功！');
-        yield put({ type: 'list', payload: { ...pagination } })
+        if(callback) callback();
+        yield put({ type: 'list', payload: { ...listQuery } })
       }
     },
     *list({ payload }, { call, put }) {
@@ -128,6 +139,40 @@ const Model: ModelType = {
             }))
           }
         })
+    },
+    *categoryList(_, { call, put }) {
+      const res = yield call(categoryList);
+      if(res.errCode === 0) {
+        yield put({
+          type: 'save',
+          payload: {
+            categoryList: res.data.map(({
+              parentName: name,
+              parentId: value,
+            }: IssueTypeListItem) => ({
+              name,
+              value,
+            }))
+          }
+        })
+      }
+    },
+    *severityList(_, { call, put }) {
+      const res = yield call(severityList);
+      if(res.errCode === 0) {
+        yield put({
+          type: 'save',
+          payload: {
+            severityList: res.data.map(({
+              name,
+              id: value,
+            }: SeverityListItem) => ({
+              name,
+              value,
+            }))
+          }
+        })
+      }
     },
     // mock 数据
     *fetchFake({ payload }, { call, put }) {

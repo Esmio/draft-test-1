@@ -1,10 +1,12 @@
-import React, { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import { Form, Input, Select, Button, DatePicker, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
 
 import styles from './index.less';
+import { UploadFile } from 'antd/lib/upload/interface';
+import { FieldProps } from '../Charts/Field';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -54,6 +56,11 @@ const CustomForm: React.FC<Props> = ({
     },
     [onFinish],
   )
+
+  useEffect(() => {
+    if(!initialValues) return;
+    form.setFieldsValue(initialValues)
+  }, [initialValues])
 
   return (
     <Form
@@ -106,20 +113,20 @@ function getComByType({
       return <PlanText />
     case 'textarea': 
       return <TextArea className={styles.itemWidth} />
-    case 'uploader':
-      return <Upload
-        name="file"
-        action="/uapi/attachment/upload"
-        listType="picture"
-        multiple
-        headers={{
-          Authorization: localStorage.getItem('token') || ''
-        }}
-      >
-        <Button >
-          <UploadOutlined /> 上传
-        </Button>
-      </Upload>
+    // case 'uploader':
+    //   return <Upload
+    //     name="file"
+    //     action="/uapi/attachment/upload"
+    //     listType="picture-card"
+    //     multiple
+    //     headers={{
+    //       Authorization: localStorage.getItem('token') || ''
+    //     }}
+    //   >
+    //     {(fileList: FileList) => fileList.length < 1 && '+ 上传'}
+    //   </Upload>
+    case 'uploader': 
+      return <CustomUpload />
     default:
       return null;
   }
@@ -133,5 +140,42 @@ interface CustomItemType{
 const PlanText: React.FC<CustomItemType> = ({ value }) => {
   return <span className="ant-form-text">{value}</span>
 }
+
+interface CustomUploadType {
+  fileList?: UploadFile<any>[] | undefined;
+  onChange?: () => void;
+}
+
+const CustomUpload: React.FC<CustomUploadType> = ({ fileList, onChange }) => (
+  <Upload
+      name="file"
+      action="/uapi/attachment/upload"
+      listType="picture-card"
+      multiple
+      fileList={fileList}
+      onChange={onChange}
+      onPreview={onPreview}
+      headers={{
+        Authorization: localStorage.getItem('token') || ''
+      }}
+    >
+      {fileList && fileList.length < 1 && '+ 上传'}
+    </Upload>
+)
+
+const onPreview = async (file: UploadFile<any> | undefined) => {
+  let src = file!.url;
+  if (!src) {
+    src = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file!.originFileObj!);
+      reader.onload = () => resolve(reader.result as string);
+    });
+  }
+  const image = new Image();
+  image.src = src!;
+  const imgWindow = window.open(src);
+  imgWindow!.document.write(image.outerHTML);
+};
 
 export default CustomForm;

@@ -37,6 +37,19 @@ export const userList = async () =>
     method: 'post',
     data: {}
   });
+// 问题类别列表
+export const categoryList = async () =>
+  request('/api/base/data/problem/category/select', {
+    method: 'post',
+    data: {}
+  })
+// 问题严重度列表
+export const severityList = async () =>
+  request('/api/base/data/severity/level/select', {
+    method: 'post',
+    data: {}
+  })
+
 export async function fetchFakeData() {
   return request('/api/fake_truck_detection_data');
 }

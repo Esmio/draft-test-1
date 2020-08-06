@@ -22,6 +22,8 @@ const Check: React.FC<Props & StateType> = ({
   preCreateObj,
   userList,
   preCreateLoading,
+  categoryList,
+  severityList,
 }) => {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -44,6 +46,8 @@ const Check: React.FC<Props & StateType> = ({
       }
     })
     dispatch({type: 'check/userList'});
+    dispatch({type: 'check/categoryList'});
+    dispatch({type: 'check/severityList'});
   }, []);
 
   // 增
@@ -83,22 +87,66 @@ const Check: React.FC<Props & StateType> = ({
   // 创建弹框提交
   const handleCreateOk = useCallback((values) => {
     delete values.produceAndQuality;
-    console.log('create-values', values);
-    const { images, ...params } = values;
+    const { images, problemCategoryId, jurors, ...params } = values;
     const imageUrl = images && images[0]?.response.data.url;
-
+    const {
+      planDate,
+      produceUserId,
+      qualityUserId,
+      id: checkPlanId,
+    } = preCreateObj!;
+    const auditFail: boolean = status === 'discipline_submit_fail';
+    delete pagination.total;
     dispatch({
       type: 'check/create',
-      payload: {...params, imageUrl},
+      payload: {
+        ...params,
+        problemCategoryId: parseInt(problemCategoryId),
+        jurors: jurors.map((userId: string) => {
+          const { name: userName } = userList.find((item) => item.value === userId)!
+          return {
+            userId,
+            userName,
+          }
+        }),
+        imageUrl,
+        planDate,
+        produceUserId,
+        qualityUserId,
+        checkPlanId,
+      },
       callback: () => {
         setCreateModalVisible(false);
+      },
+      listQuery: {
+        auditFail,
+        ...pagination,
+        status,
       }
     })
-  }, [])
+  }, [preCreateObj, status, pagination, ])
+
+  // 编辑弹框提交
+  const handleEditConfirm = useCallback((values) => {
+    dispatch({
+      type: 'check/update',
+      payload: {
+        ...values,
+        id: selectedRows[0].id,
+      },
+      callback: () => {
+        setEditModalVisible(false);
+      }
+    })
+  }, [editModalVisible, selectedRows])
 
   const handleCreateCancel = useCallback(() => {
     setCreateModalVisible(false);
   }, [createModalVisible])
+  // 编辑弹框取消
+  const handleEditModalCancel = useCallback(() => {
+    setEditModalVisible(false)
+  }, [editModalVisible])
 
   // select rows
   const handleRowSelected:
@@ -121,6 +169,8 @@ const Check: React.FC<Props & StateType> = ({
     },
     [],
   )
+
+  console.log('selectedRows', selectedRows);
 
   return (
     <Main
@@ -268,7 +318,7 @@ const Check: React.FC<Props & StateType> = ({
             },
             {
               label: "陪审员",
-              name: 'processProblemUserDtoList',
+              name: 'jurors',
               type: 'select',
               mode: 'multiple',
               typeOptions: userList,
@@ -281,9 +331,9 @@ const Check: React.FC<Props & StateType> = ({
             },
             {
               label: "问题类别",
-              name: 'categoryName',
+              name: 'problemCategoryId',
               type: 'select',
-              typeOptions: [],
+              typeOptions: categoryList,
               rules: [
                 {
                   required: true,
@@ -316,9 +366,9 @@ const Check: React.FC<Props & StateType> = ({
             },
             {
               label: "问题严重度",
-              name: 'severityName',
+              name: 'severityId',
               type: 'select',
-              typeOptions: [],
+              typeOptions: severityList,
               rules: [
                 {
                   required: true,
@@ -330,7 +380,6 @@ const Check: React.FC<Props & StateType> = ({
           initialValues={{
             // planDate: moment().format('YYYY-MM'),
             //preCreateObj
-            departmentId: preCreateObj?.departmentId,
             departmentName: preCreateObj?.departmentName,
             planDate: preCreateObj?.planDate,
             produceUserId: preCreateObj?.produceUserId,
@@ -342,12 +391,125 @@ const Check: React.FC<Props & StateType> = ({
             // departmentName: '',
             // qualityUserName: '',
             processProblemUserDtoList: [],
-            categoryName: '',
+            problemCategoryId: '',
             imageUrl: '',
             problemDesc: '',
-            severityName: '',
+            severityId: '',
           }}
           onFinish={handleCreateOk}
+        />
+      </Modal>
+      <Modal
+        visible={editModalVisible}
+        title="编辑工艺纪律检查"
+        onCancel={handleEditModalCancel}
+        footer={null}
+      >
+        <CustomForm
+          name="create"
+          items={[
+            {
+              label: "时间",
+              name: 'planDate',
+              type: 'readonly',
+            },
+            {
+              label: "区域",
+              name: 'departmentName',
+              type: 'readonly',
+            },
+            {
+              label: "检查人员",
+              name: 'produceAndQuality',
+              type: 'readonly',
+            },
+            {
+              label: "陪审员",
+              name: 'jurors',
+              type: 'select',
+              mode: 'multiple',
+              typeOptions: userList,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择陪审员'
+                }
+              ]
+            },
+            {
+              label: "问题类别",
+              name: 'problemCategoryId',
+              type: 'select',
+              typeOptions: categoryList,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择问题类别'
+                }
+              ]
+            },
+            {
+              label: "问题图片",
+              name: 'images',
+              type: 'uploader',
+              valuePropName: 'fileList',
+              getValueFromEvent: e => {
+                if (Array.isArray(e)) {
+                  return e;
+                }
+                return e && e.fileList;
+              },
+              rules: [
+                {
+                  required: true,
+                  message: '请上传图片'
+                }
+              ]
+            },
+            {
+              label: "问题描述",
+              name: 'problemDesc',
+              type: 'textarea',
+            },
+            {
+              label: "问题严重度",
+              name: 'severityId',
+              type: 'select',
+              typeOptions: severityList,
+              rules: [
+                {
+                  required: true,
+                  message: '请选择问题严重度'
+                }
+              ]
+            },
+          ]}
+          initialValues={{
+            // planDate: moment().format('YYYY-MM'),
+            //preCreateObj
+            departmentName: selectedRows[0]?.departmentName,
+            planDate: selectedRows[0]?.planDate,
+            produceUserId: selectedRows[0]?.produceUserId,
+            produceUserName: selectedRows[0]?.produceUserName,
+            qualityUserId: selectedRows[0]?.qualityUserId,
+            qualityUserName: selectedRows[0]?.qualityUserName,
+            produceAndQuality: `${selectedRows[0]?.produceUserName}，${selectedRows[0]?.qualityUserName}`,
+            //pre
+            // departmentName: '',
+            // qualityUserName: '',
+            jurors: selectedRows[0]?.processProblemUserDtoList.map(({ userId }: Juror) => userId),
+            problemCategoryId: selectedRows[0]?.categoryId,
+            imageUrl: selectedRows[0]?.imageUrl,
+            problemDesc: selectedRows[0]?.problemDesc,
+            severityId: selectedRows[0]?.severityId,
+            images: selectedRows[0] && [{
+              uid: '-1',
+              name: 'img',
+              status: 'done',
+              url: selectedRows[0].imageUrl,
+            }]
+          }}
+          onFinish={handleEditConfirm}
         />
       </Modal>
     </Main>
@@ -363,6 +525,8 @@ export default connect(
       preCreateObj,
       userList,
       preCreateLoading,
+      categoryList,
+      severityList,
     },
   }: {
     check: StateType;
@@ -373,5 +537,7 @@ export default connect(
     preCreateObj,
     userList,
     preCreateLoading,
+    categoryList,
+    severityList,
   }),
 )(Check);
