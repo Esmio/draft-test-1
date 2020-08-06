@@ -10,6 +10,8 @@ import {
   categoryList,
   severityList,
   fetchFakeData,
+  submit,
+  auth,
 } from './service';
 
 import {
@@ -50,6 +52,8 @@ export interface ModelType {
     userList: Effect;
     categoryList: Effect,
     severityList: Effect,
+    submit: Effect;
+    auth: Effect;
     // fetch: Effect;
     fetchFake: Effect;
   };
@@ -186,6 +190,21 @@ const Model: ModelType = {
             }))
           }
         })
+      }
+    },
+    *submit({ payload }, { call, put }) {
+      const res = yield call(submit, payload);
+      if(res.errCode === 0) {
+        message.success('已提交！')
+      }
+    },
+    *auth({ payload, callback, listQuery }, { call, put }) {
+      console.log('listQuery', listQuery)
+      const res = yield call(auth, payload);
+      if(res.errCode === 0) {
+        message.success('操作成功!')
+        if(callback) callback();
+        yield put({type: 'list', payload: listQuery});
       }
     },
     // mock 数据

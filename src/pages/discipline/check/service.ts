@@ -1,5 +1,12 @@
 import request from '@/utils/request';
-import { CreateQuery, ListQuery, UpdateQuery, RemoveQuery } from './data.d';
+import {
+  CreateQuery,
+  ListQuery,
+  UpdateQuery,
+  RemoveQuery,
+  SubmitQuery,
+  AuthQuery,
+} from './data.d';
 
 // precreate
 export const preCreate = async () =>
@@ -48,6 +55,18 @@ export const severityList = async () =>
   request('/api/base/data/severity/level/select', {
     method: 'post',
     data: {}
+  })
+// 提交
+export const submit = async (params: SubmitQuery) =>
+  request('/api/process/problemOrder/commit', {
+    method: 'post',
+    data: params,
+  })
+// 审核
+export const auth = async (params: AuthQuery) =>
+  request('/api/process/problemOrder/audit', {
+    method: 'post',
+    data: params,
   })
 
 export async function fetchFakeData() {

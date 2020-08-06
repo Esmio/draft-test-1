@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, ReactText, useRef } from 'react';
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
-import { Table, Modal } from 'antd';
+import { Table, Modal, Button } from 'antd';
+import moment from 'moment';
 
 import { StateType } from './model';
 import { Juror, ListItem } from './data.d';
@@ -27,6 +28,7 @@ const Check: React.FC<Props & StateType> = ({
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [dealModalVisible, setDealModalVisible] = useState(false);
   const [selectedRows, setSelectedRows] = useState<ListItem[]>([]);
   const [status, setStatus] = useState('discipline_start');
 
@@ -88,7 +90,7 @@ const Check: React.FC<Props & StateType> = ({
       }
     })
   }, [selectedRows])
-
+  // Tab 切换
   const handleTabChange = useCallback(
     (status) => {
       const auditFail: boolean = status === 'discipline_submit_fail';
@@ -212,6 +214,73 @@ const Check: React.FC<Props & StateType> = ({
     [],
   )
 
+  // 提交
+  const handleSubmit = useCallback(() => {
+    dispatch({
+      type: 'check/submit',
+      payload: {
+        ids: selectedRows.map(({id}: ListItem) => id),
+      }
+    })
+  }, [selectedRows])
+
+  // 审核
+  const handleAuthClicked = useCallback((title, reject, approve) => {
+    Modal.confirm({
+      title,
+      okText: '审核',
+      cancelText: '驳回',
+      onOk: () => {
+        handleAuth(approve)
+      },
+      onCancel: () => {
+        handleAuth(reject)
+      }
+    })
+  }, [])
+  // 审核、提交等接口
+  const handleAuth = useCallback((_status: number, payload?: {}) => {
+    delete pagination.total;
+    const auditFail: boolean = status === 'discipline_submit_fail';
+    dispatch({
+      type: 'check/auth',
+      payload: {
+        ...payload,
+        ids: selectedRows.map(({id}: ListItem) => id),
+        status: _status,
+      },
+      callback: () => {
+        if(_status === 1) setDealModalVisible(false);
+      },
+      listQuery: {
+        auditFail,
+        ...pagination,
+        status,
+      }
+    }) 
+  }, [selectedRows, pagination, status])
+
+  // 待处理Modal
+  const handleDealModalClicked = useCallback(() => {
+    setDealModalVisible(true);
+  }, [])
+  // 待处理Modal cancel
+  const handleDealModalCancel = useCallback(() => {
+    setDealModalVisible(false);
+  }, [])
+
+  // 处理Tab 的 Modal提交
+  const handleDealConfirm = useCallback((values) => {
+    console.log('deal-values', values);
+    const { finishTime, dealWithImage } = values;
+    const url = dealWithImage && dealWithImage[0]?.response.data.url;
+    handleAuth(1, {
+      ...values,
+      finishTime: moment(finishTime).format('YYYY-MM-DD'),
+      dealWithImage: url,
+    })
+  }, [selectedRows, status])
+
   console.log('selectedRows', selectedRows);
 
   return (
@@ -252,6 +321,25 @@ const Check: React.FC<Props & StateType> = ({
         },
       ]}
       onTabChange={handleTabChange}
+      extra={
+        <>
+          {(status === 'discipline_start' || status === 'discipline_submit_fail' ) && <Button
+            disabled={selectedRows.length === 0}
+            type="primary"
+            onClick={handleSubmit}
+          >提交</Button>}
+          {status === 'discipline_submit' && <Button
+            disabled={selectedRows.length === 0}
+            type="primary"
+            onClick={handleAuthClicked.bind(null, '审核', -1, 0)}
+          >审核</Button>}
+          {status === 'discipline_approve' && <Button
+            disabled={selectedRows.length !== 1}
+            type="primary"
+            onClick={handleDealModalClicked}
+          >处理</Button>}
+        </>
+      }
     >
       <Table
         bordered
@@ -552,6 +640,46 @@ const Check: React.FC<Props & StateType> = ({
             }]
           }}
           onFinish={handleEditConfirm}
+        />
+      </Modal>
+      <Modal
+        title="待处理"
+        visible={dealModalVisible}
+        onCancel={handleDealModalCancel}
+        footer={null}
+      >
+        <CustomForm
+          name="deal"
+          items={[
+            {
+              label: "原因分析",
+              name: 'reason',
+              type: 'textarea',
+            },
+            {
+              label: "对策措施",
+              name: 'auditComment',
+              type: 'textarea',
+            },
+            {
+              label: "完成时间",
+              name: 'finishTime',
+              type: 'datepicker',
+            },
+            {
+              label: "上传照片",
+              name: 'dealWithImage',
+              type: 'uploader',
+              valuePropName: 'fileList',
+              getValueFromEvent: e => {
+                if (Array.isArray(e)) {
+                  return e;
+                }
+                return e && e.fileList;
+              }
+            },
+          ]}
+          onFinish={handleDealConfirm}
         />
       </Modal>
     </Main>

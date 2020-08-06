@@ -96,3 +96,12 @@ export interface IssueTypeListItem {
   parentId: string;
   parentName: string;
 }
+// 提交
+export interface SubmitQuery {
+  ids: number[];
+}
+// 审核
+export interface AuthQuery {
+  ids: number[];
+  status: number;
+}
