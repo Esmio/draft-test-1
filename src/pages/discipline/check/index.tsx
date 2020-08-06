@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, ReactText, useRef } from 'reac
 import { connect } from 'dva';
 import { Dispatch } from 'redux';
 import { Table, Modal } from 'antd';
-import moment from 'moment';
 
 import { StateType } from './model';
 import { Juror, ListItem } from './data.d';
@@ -64,8 +63,31 @@ const Check: React.FC<Props & StateType> = ({
     setEditModalVisible(true);
   }, [editModalVisible]);
 
+  // 删除提交
   const onRemove = useCallback(() => {
-  }, [])
+    const auditFail: boolean = status === 'discipline_submit_fail';
+    Modal.confirm({
+      title: '确定删除吗？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk: () => {
+        dispatch({
+          type: 'check/remove',
+          payload: {
+            processProblemId: selectedRows.map(({id}: ListItem) => id),
+          },
+          callback: () => {
+            setSelectedRows([]);
+          },
+          listQuery: {
+            auditFail,
+            ...pagination,
+            status,
+          }
+        })
+      }
+    })
+  }, [selectedRows])
 
   const handleTabChange = useCallback(
     (status) => {
@@ -128,17 +150,37 @@ const Check: React.FC<Props & StateType> = ({
 
   // 编辑弹框提交
   const handleEditConfirm = useCallback((values) => {
+    console.log('edit-values', values);
+    delete values.produceAndQuality;
+    const { images, problemCategoryId, jurors, ...params } = values;
+    const imageUrl = images && images[0]?.response ? images[0]?.response.data.url : undefined;
+    const auditFail: boolean = status === 'discipline_submit_fail';
     dispatch({
       type: 'check/update',
       payload: {
-        ...values,
+        ...params,
+        problemCategoryId: parseInt(problemCategoryId),
+        jurors: jurors.map((userId: string) => {
+          const { name: userName } = userList.find((item) => item.value === userId) || {}
+          return {
+            userId,
+            userName,
+          }
+        }),
+        imageUrl,
         id: selectedRows[0].id,
       },
       callback: () => {
         setEditModalVisible(false);
+        setSelectedRows([])
+      },
+      listQuery: {
+        auditFail,
+        ...pagination,
+        status,
       }
     })
-  }, [editModalVisible, selectedRows])
+  }, [editModalVisible, selectedRows, status])
 
   const handleCreateCancel = useCallback(() => {
     setCreateModalVisible(false);
@@ -177,8 +219,8 @@ const Check: React.FC<Props & StateType> = ({
       control={<ControlBar
         createLoading={preCreateLoading}
         canEdit={selectedRows.length === 1}
-        // canDelete={selectedRows.length > 0}
-        canDelete={selectedRows.length === 1}
+        canDelete={selectedRows.length > 0}
+        // canDelete={selectedRows.length === 1}
         onCreate={onCreate}
         onEdit={onEdit}
         onRemove={onRemove}
@@ -286,7 +328,7 @@ const Check: React.FC<Props & StateType> = ({
             dataIndex: 'processProblemUserDtoList',
             align: 'center',
             key: 'processProblemUserDtoList',
-            render: arr => arr.map(({ userName }: Juror) => userName).join('，')
+            render: arr => arr?.map(({ userName }: Juror) => userName).join('，')
           },
         ]}
         dataSource={list}
@@ -497,7 +539,7 @@ const Check: React.FC<Props & StateType> = ({
             //pre
             // departmentName: '',
             // qualityUserName: '',
-            jurors: selectedRows[0]?.processProblemUserDtoList.map(({ userId }: Juror) => userId),
+            jurors: selectedRows[0]?.processProblemUserDtoList?.map(({ userId }: Juror) => userId),
             problemCategoryId: selectedRows[0]?.categoryId,
             imageUrl: selectedRows[0]?.imageUrl,
             problemDesc: selectedRows[0]?.problemDesc,

@@ -100,7 +100,7 @@ const Model: ModelType = {
       if (res.errCode === 0) {
         message.success('创建成功！');
         if(callback) callback();
-        yield put({ type: 'list', payload: { ...listQuery } })
+        yield put({ type: 'list', payload: listQuery })
       }
     },
     *list({ payload }, { call, put }) {
@@ -122,8 +122,22 @@ const Model: ModelType = {
       }
       yield put({ type: 'save', payload: { loading: false } })
     },
-    *update() { },
-    *remove() { },
+    *update({ payload, callback, listQuery }, { call, put }) { 
+      const res = yield call(update, payload);
+      if(res.errCode == 0) {
+        message.success('修改成功！')
+        if(callback) callback();
+        yield put({type: 'list', payload: listQuery})
+      }
+    },
+    *remove({ payload, callback, listQuery }, { call, put }) {
+      const res = yield call(remove, payload);
+      if(res.errCode === 0) {
+        message.success('已删除！');
+        if(callback) callback();
+        yield put({ type: 'list', payload: listQuery });
+      }
+    },
     *userList(_, { call, put }) {
       const res = yield call(userList);
       if(res.errCode === 0) 

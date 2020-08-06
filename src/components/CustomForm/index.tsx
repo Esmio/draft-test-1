@@ -54,13 +54,8 @@ const CustomForm: React.FC<Props> = ({
       onFinish && onFinish(values);
       form.resetFields();
     },
-    [onFinish],
+    [onFinish, form],
   )
-
-  useEffect(() => {
-    if(!initialValues) return;
-    form.setFieldsValue(initialValues)
-  }, [initialValues])
 
   return (
     <Form
@@ -110,21 +105,9 @@ function getComByType({
         picker={picker || 'date'}
       />
     case 'readonly':
-      return <PlanText />
+      return <PlainText />
     case 'textarea': 
       return <TextArea className={styles.itemWidth} />
-    // case 'uploader':
-    //   return <Upload
-    //     name="file"
-    //     action="/uapi/attachment/upload"
-    //     listType="picture-card"
-    //     multiple
-    //     headers={{
-    //       Authorization: localStorage.getItem('token') || ''
-    //     }}
-    //   >
-    //     {(fileList: FileList) => fileList.length < 1 && '+ 上传'}
-    //   </Upload>
     case 'uploader': 
       return <CustomUpload />
     default:
@@ -137,7 +120,7 @@ interface CustomItemType{
   onChange?: () => void;
 }
 
-const PlanText: React.FC<CustomItemType> = ({ value }) => {
+const PlainText: React.FC<CustomItemType> = ({ value }) => {
   return <span className="ant-form-text">{value}</span>
 }
 
@@ -145,7 +128,7 @@ interface CustomUploadType {
   fileList?: UploadFile<any>[] | undefined;
   onChange?: () => void;
 }
-
+// 自定义上传组件
 const CustomUpload: React.FC<CustomUploadType> = ({ fileList, onChange }) => (
   <Upload
       name="file"
@@ -159,7 +142,7 @@ const CustomUpload: React.FC<CustomUploadType> = ({ fileList, onChange }) => (
         Authorization: localStorage.getItem('token') || ''
       }}
     >
-      {fileList && fileList.length < 1 && '+ 上传'}
+      {fileList && fileList.length >= 1 ? null : '+ 上传'}
     </Upload>
 )
 
