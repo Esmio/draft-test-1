@@ -237,7 +237,7 @@ const Check: React.FC<Props & StateType> = ({
         handleAuth(reject)
       }
     })
-  }, [])
+  }, [selectedRows, status])
   // 审核、提交等接口
   const handleAuth = useCallback((_status: number, payload?: {}) => {
     delete pagination.total;
@@ -276,12 +276,10 @@ const Check: React.FC<Props & StateType> = ({
     const url = dealWithImage && dealWithImage[0]?.response.data.url;
     handleAuth(1, {
       ...values,
-      finishTime: moment(finishTime).format('YYYY-MM-DD'),
+      finishTime: moment(finishTime).format('YYYY-MM-DD hh:mm:ss'),
       dealWithImage: url,
     })
   }, [selectedRows, status])
-
-  console.log('selectedRows', selectedRows);
 
   return (
     <Main
