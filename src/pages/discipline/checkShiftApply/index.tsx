@@ -66,7 +66,7 @@ const CheckShiftApply: React.FC<Props & StateType> = ({
         })
       }
     })
-  }, [selectedRows, status])
+  }, [selectedRows, status, pagination])
   // tab切换
   const handleTabChange = useCallback(
     (status) => {
@@ -332,7 +332,7 @@ const CheckShiftApply: React.FC<Props & StateType> = ({
       />
       <Modal
         visible={createModalVisible}
-        title="新增层级信息"
+        title="新增排班"
         onCancel={handleCreateCancel}
         footer={null}
       >
@@ -374,7 +374,7 @@ const CheckShiftApply: React.FC<Props & StateType> = ({
       </Modal>
       <Modal
         visible={editModalVisible}
-        title="编辑层级信息"
+        title="编辑排班"
         onCancel={handleEditModalCancel}
         footer={null}
       >

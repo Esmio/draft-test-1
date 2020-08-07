@@ -17,11 +17,10 @@ const Search: React.FC<Props> = ({ onChange, value }) => (
       onChange={onChange}
       className={styles.select}
     >
-      <Option value="0">全部</Option>
-      <Option value="1">待提交</Option>
-      <Option value="2">待审批</Option>
-      <Option value="3">已通过</Option>
-      <Option value="4">待提交</Option>
+      <Option value="-1">待提交</Option>
+      <Option value="0">待审批</Option>
+      <Option value="1">未通过</Option>
+      <Option value="2">已完成</Option>
     </Select>
   </>
 )
