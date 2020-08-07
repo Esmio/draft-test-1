@@ -1,12 +1,11 @@
 import React, { ReactNode, useCallback, useEffect } from 'react';
 import { Form, Input, Select, Button, DatePicker, Upload } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
 import { Callbacks, Store } from 'rc-field-form/lib/interface';
 import { FormItemProps } from 'antd/lib/form'
+import { ValidateStatus } from 'antd/lib/form/FormItem';
 
 import styles from './index.less';
 import { UploadFile } from 'antd/lib/upload/interface';
-import { FieldProps } from '../Charts/Field';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -22,6 +21,8 @@ interface WithTypeItemProps extends FormItemProps {
   multi?: boolean;
   mode?: "multiple" | "tags" | undefined;
   picker?: "date" | "week" | "month" | "quarter" | "year";
+  validateStatus?: ValidateStatus;
+  help?: string | undefined;
 }
 
 interface Props {
@@ -30,6 +31,8 @@ interface Props {
   name?: string;
   onFinish?:Callbacks['onFinish'];
   onFinishFailed?:Callbacks['onFinishFailed'];
+  onValuesChange?:Callbacks['onValuesChange'];
+  onReject?: (values: Store) => void;
 }
 
 const layout = {
@@ -46,6 +49,8 @@ const CustomForm: React.FC<Props> = ({
   initialValues,
   onFinish,
   onFinishFailed,
+  onValuesChange,
+  onReject,
 }) => {
   const [form] = Form.useForm();
 
@@ -57,6 +62,12 @@ const CustomForm: React.FC<Props> = ({
     [onFinish, form],
   )
 
+  const handleReject = useCallback(() => {
+    const values = form.getFieldsValue()
+    onReject && onReject(values)
+    form.resetFields();
+  }, [form, onReject])
+
   return (
     <Form
       {...layout}
@@ -65,6 +76,7 @@ const CustomForm: React.FC<Props> = ({
       initialValues={initialValues || {}}
       onFinish={handleOnFinish}
       onFinishFailed={onFinishFailed}
+      onValuesChange={onValuesChange}
     >
       {items.map(({ type, typeOptions, mode, picker, ...itemProps }, idx) => (
         <Form.Item {...itemProps} key={idx}>
@@ -74,6 +86,12 @@ const CustomForm: React.FC<Props> = ({
       <Form.Item {...tailLayout}>
         <Button className={styles.button} htmlType="submit" type="primary">确认</Button>
       </Form.Item>
+      {
+        onReject && 
+        <Form.Item {...tailLayout}>
+          <Button className={styles.button} onClick={handleReject} >驳回</Button>
+        </Form.Item>
+      }
     </Form>
   )
 }
@@ -131,19 +149,19 @@ interface CustomUploadType {
 // 自定义上传组件
 const CustomUpload: React.FC<CustomUploadType> = ({ fileList, onChange }) => (
   <Upload
-      name="file"
-      action="/uapi/attachment/upload"
-      listType="picture-card"
-      multiple
-      fileList={fileList}
-      onChange={onChange}
-      onPreview={onPreview}
-      headers={{
-        Authorization: localStorage.getItem('token') || ''
-      }}
-    >
-      {fileList && fileList.length >= 1 ? null : '+ 上传'}
-    </Upload>
+    name="file"
+    action="/uapi/attachment/upload"
+    listType="picture-card"
+    multiple
+    fileList={fileList}
+    onChange={onChange}
+    onPreview={onPreview}
+    headers={{
+      Authorization: localStorage.getItem('token') || ''
+    }}
+  >
+    {fileList && fileList.length >= 1 ? null : '+ 上传'}
+  </Upload>
 )
 
 const onPreview = async (file: UploadFile<any> | undefined) => {
