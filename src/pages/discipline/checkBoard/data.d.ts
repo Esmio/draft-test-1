@@ -8,8 +8,19 @@ export interface DateRangeQuery {
 }
 // 分页
 export type PagiType = {
-  pageNum: number;
-  pageSize: number;
+  page: number;
+  size: number;
   total?: number
 }
-
+// ListQuery
+export interface ListQuery {
+  page: number;
+  size: number;
+  status: string;
+}
+// UserItem
+export interface UserItem {
+  processId: number;
+  userId: string;
+  userName: string;
+}
